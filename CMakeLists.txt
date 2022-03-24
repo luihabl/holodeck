@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(GLFW3 REQUIRED)
 
+include_directories(external/glm)
+
 add_executable(holodeck
 src/main.cpp
 
