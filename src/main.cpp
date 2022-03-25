@@ -1,12 +1,13 @@
 
-#include <glm/glm.hpp>
+#include "platform.h"
+
+using namespace holodeck;
 
 int main()
 {
+    Platform p;
 
-    auto b = glm::vec2(1.0f);
-
-
+    p.init(PlatformConfig(256, 128, "holodeck"));
 
     return 0;
 }
