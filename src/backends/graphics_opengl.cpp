@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 constexpr const char* default_vertex_src = "#version 330 core\n\
 layout (location = 0) in vec2 vertex_pos;\n\
@@ -39,10 +40,24 @@ void main()\n\
 
 using namespace holodeck;
 
+// ---- Graphics ----
+
 void Graphics::load_gl_functions(GLLoaderFunction gl_loader)
 {
     ASSERT_MSG(gladLoadGLLoader((GLADloadproc) gl_loader), "Failed to load GL functions");
 }
+
+void Graphics::clear(const glm::vec3 & c) {
+    glClearColor(c.x, c.y, c.z, 1.0f); 
+    glClear(GL_COLOR_BUFFER_BIT); 
+}
+
+void Graphics::clear(const glm::vec4 & c) {
+    glClearColor(c.x, c.y, c.z, c.w); 
+    glClear(GL_COLOR_BUFFER_BIT); 
+}
+
+// ---- Shader ----
 
 Shader & Shader::use() {
     if(this->compiled) {

@@ -2,6 +2,8 @@
 
 #include "../platform.h"
 #include "../graphics.h"
+#include "../log.h"
+
 #include <SDL.h>
 #include <cstdint>
 
@@ -16,8 +18,10 @@ namespace
     SDL_GLContext context;
 }
 
-void Platform::init(const PlatformConfig& config)
+void Platform::init(const PlatformConfig& _config)
 {
+    config = _config;
+
     uint32_t flags = 0;
 
     SDL_Init(SDL_INIT_VIDEO);
@@ -48,11 +52,9 @@ void Platform::init(const PlatformConfig& config)
     
     window = SDL_CreateWindow(config.name.c_str(), x, y, config.w, config.h, flags);
 
-    
-
-    // SDL_version sdl_version;
-    // SDL_GetVersion(&sdl_version);
-    // Log::info("SDL %i.%i.%i", sdl_version.major, sdl_version.minor, sdl_version.patch);
+    SDL_version sdl_version;
+    SDL_GetVersion(&sdl_version);
+    Log::info("Platform: SDL %i.%i.%i", sdl_version.major, sdl_version.minor, sdl_version.patch);
 
     if(config.use_opengl)
     {
@@ -62,7 +64,26 @@ void Platform::init(const PlatformConfig& config)
     }
 
     // Graphics::setup_debug();
-
 }
+
+void Platform::update()
+{
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) 
+    {
+        if (event.type == SDL_QUIT)
+        {
+            if(config.on_exit) 
+                config.on_exit();
+            continue;
+        }
+    }
+}
+
+void Platform::swap_buffers()
+{
+    SDL_GL_SwapWindow(window);
+}
+
 
 #endif

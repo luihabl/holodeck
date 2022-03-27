@@ -1,6 +1,6 @@
 #pragma once 
 
-// #include <glm/glm.hpp>
+#include <glm/glm.hpp>
 
 namespace holodeck {
     class Shader {
@@ -12,6 +12,7 @@ namespace holodeck {
             
             Shader & use();
             void del();
+
             
             // void set_double(const char * name, const double & value) const;
             // void set_float(const char * name, const float & value) const;
