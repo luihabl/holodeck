@@ -1,11 +1,15 @@
 #include "../graphics.h"
 #include "../shader.h"
 #include "../log.h"
+#include "../file.h"
 
 #include <string>
 #include <cstring>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+
+#define OPENGL_VERSION_MAJOR 3
+#define OPENGL_VERSION_MINOR 3
 
 constexpr const char* default_vertex_src = "#version 330 core\n\
 layout (location = 0) in vec2 vertex_pos;\n\
@@ -55,6 +59,16 @@ void Graphics::clear(const glm::vec3 & c) {
 void Graphics::clear(const glm::vec4 & c) {
     glClearColor(c.x, c.y, c.z, c.w); 
     glClear(GL_COLOR_BUFFER_BIT); 
+}
+
+int Graphics::major_version() 
+{
+    return OPENGL_VERSION_MAJOR;
+}
+
+int Graphics::minor_version() 
+{
+    return OPENGL_VERSION_MINOR;
 }
 
 // ---- Shader ----
@@ -130,47 +144,49 @@ Shader Shader::from_source(const char* vertex_src, const char* frag_src, const c
     return shader;
 }
 
-// Shader Shader::from_file(const char* vertex_path, const char* frag_path, const char*  geom_path) {
-//     Shader shader;
-//     std::string vertex_src, frag_src, geom_src;
+Shader Shader::from_file(const char* vertex_path, const char* frag_path, const char*  geom_path) {
+    Shader shader;
+    std::string vertex_src, frag_src, geom_src;
 
-//     vertex_src = File::load_txt(vertex_path);
-//     frag_src   = File::load_txt(frag_path);
-//     if(geom_path != nullptr)
-//         geom_src   = File::load_txt(geom_path);
+    vertex_src = File::load_txt(vertex_path);
+    frag_src   = File::load_txt(frag_path);
+    if(geom_path != nullptr)
+        geom_src   = File::load_txt(geom_path);
 
-//     if (frag_src != "" && vertex_src != "")
-//         shader.compile_all(vertex_src.c_str(), frag_src.c_str(), geom_path != nullptr ? geom_src.c_str() : nullptr);
-//     return shader;    
-// }
+    if (frag_src != "" && vertex_src != "")
+        shader.compile_all(vertex_src.c_str(), frag_src.c_str(), geom_path != nullptr ? geom_src.c_str() : nullptr);
+    return shader;    
+}
 
-Shader Shader::default_sprite_shaders() {
+Shader Shader::default_sprite_shaders() 
+{
     return from_source(default_vertex_src, default_frag_src);
 }
 
-// void Shader::set_float(const char * name, const float & value) const {
-//     glUniform1f(glGetUniformLocation(this->id, name), value);
-// }
+int Shader::find_uniform(const char *name)
+{
+    return glGetUniformLocation(this->id, name);
+}
 
-// void Shader::set_double(const char * name, const double & value) const {
-//     glUniform1d(glGetUniformLocation(this->id, name), value);
-// }
+void Shader::set_float(const char * name, const float & value) const {
+    glUniform1f(glGetUniformLocation(this->id, name), value);
+}
 
-// void Shader::set_int(const char * name, const int & value) const {
-//     glUniform1i(glGetUniformLocation(this->id, name), value);
-// }
+void Shader::set_int(const char * name, const int & value) const {
+    glUniform1i(glGetUniformLocation(this->id, name), value);
+}
 
-// void Shader::set_mat4x4(const char * name, const Mat4x4 & mat) const {
-//     glUniformMatrix4fv(glGetUniformLocation(this->id, name), 1, false, mat.data);
-// }
+void Shader::set_mat4(const char * name, const glm::mat4 & mat) const {
+    glUniformMatrix4fv(glGetUniformLocation(this->id, name), 1, false, &(mat[0][0]));
+}
 
-// void Shader::set_vec2(const char * name, const Vec2 & vec) const {
-//     glUniform2f(glGetUniformLocation(this->id, name), vec[0], vec[1]);
-// }
+void Shader::set_vec2(const char * name, const glm::vec2 & vec) const {
+    glUniform2f(glGetUniformLocation(this->id, name), vec[0], vec[1]);
+}
 
-// void Shader::set_vec3(const char * name, const Vec3 & vec) const {
-//     glUniform3f(glGetUniformLocation(this->id, name), vec[0], vec[1], vec[2]);
-// }
+void Shader::set_vec3(const char * name, const glm::vec3 & vec) const {
+    glUniform3f(glGetUniformLocation(this->id, name), vec[0], vec[1], vec[2]);
+}
 
 // void Shader::set_dvec2(const char * name, const DVec2 & vec) const {
 //     glUniform2d(glGetUniformLocation(this->id, name), vec[0], vec[1]);

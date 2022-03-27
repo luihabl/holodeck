@@ -15,6 +15,7 @@ option(GRAPHICS_OPENGL "Use OpenGL" ON)
 add_executable(holodeck
 src/main.cpp
 src/log.cpp
+src/file.cpp
 )
 
 target_include_directories(holodeck PUBLIC

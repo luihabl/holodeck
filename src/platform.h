@@ -2,6 +2,7 @@
 
 #include <string>
 #include <functional>
+#include <cstdint>
 
 namespace holodeck
 {
@@ -28,6 +29,7 @@ namespace holodeck
         void init(const PlatformConfig& config);
         void update();
         void swap_buffers();
+        uint64_t get_time_ms();
 
 
         void terminate();

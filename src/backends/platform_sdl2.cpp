@@ -5,10 +5,6 @@
 #include "../log.h"
 
 #include <SDL.h>
-#include <cstdint>
-
-#define OPENGL_VERSION_MAJOR 3
-#define OPENGL_VERSION_MINOR 3
 
 using namespace holodeck;
 
@@ -27,8 +23,8 @@ void Platform::init(const PlatformConfig& _config)
     SDL_Init(SDL_INIT_VIDEO);
     if(config.use_opengl)
     {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OPENGL_VERSION_MAJOR);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OPENGL_VERSION_MINOR);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, Graphics::major_version());
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, Graphics::minor_version());
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -83,6 +79,19 @@ void Platform::update()
 void Platform::swap_buffers()
 {
     SDL_GL_SwapWindow(window);
+}
+
+uint64_t Platform::get_time_ms()
+{
+    return SDL_GetTicks64();
+}
+
+void Platform::terminate()
+{
+	SDL_DestroyWindow(window);
+	window = nullptr;
+    SDL_GL_DeleteContext(context);
+	SDL_Quit();
 }
 
 

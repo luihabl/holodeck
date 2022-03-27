@@ -14,6 +14,10 @@ namespace holodeck {
         void setup_debug();
         void clear(const glm::vec3 & c);
         void clear(const glm::vec4 & c);
+
+        int major_version();
+        int minor_version();
+
         // void set_blend_mode();
         // void viewport(int w, int h);
         // void viewport(int x, int y, int w, int h);
