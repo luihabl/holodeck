@@ -6,6 +6,7 @@
 
 #include <glm/gtc/matrix_transform.hpp> //remove this
 #include <glad/glad.h> //remove this
+#include <vector>
 
 using namespace holodeck;
 
@@ -34,7 +35,7 @@ int main()
 
     // Initializing OpenGL
 
-    Vertex vertices[] = {
+    std::vector<Vertex> vertices = {
         {{-0.5f, -0.5f, -0.5f}},
         {{ 0.5f, -0.5f, -0.5f}},
         {{ 0.5f,  0.5f, -0.5f}},
@@ -44,8 +45,9 @@ int main()
         {{ 0.5f,  0.5f,  0.5f}},
         {{-0.5f,  0.5f,  0.5f}}
     };
+    
 
-    unsigned int indices[] = {
+    std::vector<int> indices = {
         0, 1, 2,
         2, 3, 0,
         4, 5, 6,
@@ -67,7 +69,7 @@ int main()
     unsigned int vbo_id;
     glGenBuffers(1, &vbo_id);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
 
     //Vec3 Vertex.pos
     glEnableVertexAttribArray(0);
@@ -76,7 +78,7 @@ int main()
     unsigned int ebo_id;
     glGenBuffers(1, &ebo_id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), indices.data(), GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -86,7 +88,7 @@ int main()
 
     // Matrices
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1, 0, 0));
+    // model = glm::rotate(model, glm::radians(-55.f), glm::vec3(0, 0, 1));
 
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -105,10 +107,10 @@ int main()
         
         Graphics::clear(glm::vec3(0, 0.1f, 0.1f));
 
-        basic_shader.set_mat4("vert_model", glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 0, 0)));
+        basic_shader.set_mat4("vert_model", glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0)));
 
         glBindVertexArray(vao_id);
-        glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3*12, GL_UNSIGNED_INT, 0);
 
 
         platform.swap_buffers();

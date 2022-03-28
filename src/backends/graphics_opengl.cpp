@@ -53,7 +53,7 @@ void Graphics::load_gl_functions(GLLoaderFunction gl_loader)
 
 void Graphics::clear(const glm::vec3 & c) {
     glClearColor(c.x, c.y, c.z, 1.0f); 
-    glClear(GL_COLOR_BUFFER_BIT); 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 }
 
 void Graphics::clear(const glm::vec4 & c) {
