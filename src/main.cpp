@@ -113,7 +113,7 @@ int main()
         glDrawElements(GL_TRIANGLES, 3*12, GL_UNSIGNED_INT, 0);
 
         if(platform.input.keyboard.just_released(Key::A))
-            Log::info("AAA");
+            Log::info("%d (%d), %d (%d)", platform.input.mouse.x, platform.input.mouse.global_x, platform.input.mouse.y, platform.input.mouse.global_y);
 
 
         platform.swap_buffers();

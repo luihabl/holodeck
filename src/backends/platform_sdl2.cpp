@@ -69,7 +69,7 @@ void Platform::update()
 
     int win_x, win_y;
     SDL_GetWindowPosition(window, &win_x, &win_y); 
-    SDL_GetGlobalMouseState(&input.mouse.global_x, &input.mouse.global_x);
+    SDL_GetGlobalMouseState(&input.mouse.global_x, &input.mouse.global_y);
     input.mouse.x = input.mouse.global_x - win_x;
     input.mouse.y = input.mouse.global_y - win_y;
 
