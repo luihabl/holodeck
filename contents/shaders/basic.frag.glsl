@@ -5,6 +5,6 @@ in vec4 frag_pos;
 
 void main()
 {
-    frag_color = frag_pos;
+    frag_color = vec4(0.5, 0.2, 0.1, 1);
 }
 

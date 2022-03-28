@@ -58,7 +58,7 @@ void Graphics::clear(const glm::vec3 & c) {
 
 void Graphics::clear(const glm::vec4 & c) {
     glClearColor(c.x, c.y, c.z, c.w); 
-    glClear(GL_COLOR_BUFFER_BIT); 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 }
 
 int Graphics::major_version() 
