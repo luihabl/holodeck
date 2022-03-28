@@ -59,11 +59,20 @@ void Platform::init(const PlatformConfig& _config)
         Graphics::load_gl_functions(SDL_GL_GetProcAddress);
     }
 
-    // Graphics::setup_debug();
+    input.keyboard.init();
 }
 
 void Platform::update()
 {
+
+    input.keyboard.update();
+
+    int win_x, win_y;
+    SDL_GetWindowPosition(window, &win_x, &win_y); 
+    SDL_GetGlobalMouseState(&input.mouse.global_x, &input.mouse.global_x);
+    input.mouse.x = input.mouse.global_x - win_x;
+    input.mouse.y = input.mouse.global_y - win_y;
+
     SDL_Event event;
     while (SDL_PollEvent(&event)) 
     {
@@ -73,6 +82,32 @@ void Platform::update()
                 config.on_exit();
             continue;
         }
+        
+        else if (event.type == SDL_KEYDOWN)
+        {
+            if(event.key.repeat == 0)
+                input.keyboard.on_press((Key) event.key.keysym.scancode);
+        }
+        else if (event.type == SDL_KEYUP)
+        {
+            if(event.key.repeat == 0)
+                input.keyboard.on_release((Key) event.key.keysym.scancode);
+        }
+
+
+        // else if(event.type == SDL_MOUSEBUTTONDOWN)
+        // {
+
+        // }
+        // else if(event.type == SDL_MOUSEBUTTONUP)
+        // {
+
+        // }
+
+
+
+
+
     }
 }
 

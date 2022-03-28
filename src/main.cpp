@@ -112,6 +112,9 @@ int main()
         glBindVertexArray(vao_id);
         glDrawElements(GL_TRIANGLES, 3*12, GL_UNSIGNED_INT, 0);
 
+        if(platform.input.keyboard.just_released(Key::A))
+            Log::info("AAA");
+
 
         platform.swap_buffers();
         

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "input.h"
+
 #include <string>
 #include <functional>
 #include <cstdint>
@@ -26,10 +28,13 @@ namespace holodeck
     class Platform
     {
         public:
+        
         void init(const PlatformConfig& config);
         void update();
         void swap_buffers();
         uint64_t get_time_ms();
+
+        InputState input;
 
 
         void terminate();
