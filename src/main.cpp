@@ -4,6 +4,9 @@
 #include "shader.h"
 #include "log.h"
 
+#include "renderer.h"
+#include "constants.h"
+
 #include <glm/gtc/matrix_transform.hpp> //remove this
 #include <glad/glad.h> //remove this
 #include <vector>
@@ -105,7 +108,7 @@ int main()
     {
         platform.update();
         
-        Graphics::clear(glm::vec3(0, 0.1f, 0.1f));
+        Graphics::clear(glm::vec3(0, 0.0f, 0.1f));
 
         basic_shader.set_mat4("vert_model", glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0)));
 
