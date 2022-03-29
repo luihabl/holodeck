@@ -3,20 +3,14 @@
 #include "graphics.h"
 #include "shader.h"
 #include "log.h"
+#include "model.h"
 
-#include "renderer.h"
 #include "constants.h"
 
 #include <glm/gtc/matrix_transform.hpp> //remove this
-#include <glad/glad.h> //remove this
 #include <vector>
 
 using namespace holodeck;
-
-struct Vertex
-{
-    glm::vec3 pos;
-};
 
 int main()
 {
@@ -36,62 +30,16 @@ int main()
 
     // ---- OpenGL stuff that will go away
 
-    // Initializing OpenGL
-
-    std::vector<Vertex> vertices = {
-        {{-0.5f, -0.5f, -0.5f}},
-        {{ 0.5f, -0.5f, -0.5f}},
-        {{ 0.5f,  0.5f, -0.5f}},
-        {{-0.5f,  0.5f, -0.5f}},
-        {{-0.5f, -0.5f,  0.5f}},
-        {{ 0.5f, -0.5f,  0.5f}},
-        {{ 0.5f,  0.5f,  0.5f}},
-        {{-0.5f,  0.5f,  0.5f}}
-    };
-    
-
-    std::vector<int> indices = {
-        0, 1, 2,
-        2, 3, 0,
-        4, 5, 6,
-        6, 7, 4,
-        7, 3, 0,
-        0, 4, 7,
-        6, 2, 1,
-        1, 5, 6,
-        0, 1, 5,
-        5, 4, 0,
-        3, 2, 6,
-        6, 7, 3,
-    };
-
-    unsigned int vao_id;
-    glGenVertexArrays(1, &vao_id);
-    glBindVertexArray(vao_id);
-
-    unsigned int vbo_id;
-    glGenBuffers(1, &vbo_id);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
-
-    //Vec3 Vertex.pos
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
-
-    unsigned int ebo_id;
-    glGenBuffers(1, &ebo_id);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * indices.size(), indices.data(), GL_STATIC_DRAW); //This becomes dynamic and goes into the loop
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
-    glEnable(GL_DEPTH_TEST);
-
+    Model cube = Model::unit_cube();
+    Model cube2 = cube;
 
     // Matrices
     glm::mat4 model = glm::mat4(1.0f);
-    // model = glm::rotate(model, glm::radians(-55.f), glm::vec3(0, 0, 1));
+
+    glm::mat4 model2 = glm::mat4(1.0f);
+    model2 = glm::translate(model2, glm::vec3(0, 4, -8));
+    model2 = glm::rotate(model2, glm::radians(20.0f), glm::vec3(1, 0, 0));
+    
 
     glm::mat4 view = glm::mat4(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
@@ -100,9 +48,9 @@ int main()
     proj = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
     // proj = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, 0.1f, 10.0f);
 
-    basic_shader.set_mat4("vert_model", model);
-    basic_shader.set_mat4("vert_view", view);
-    basic_shader.set_mat4("vert_proj", proj);
+    // basic_shader.set_mat4("vert_model", model);
+    basic_shader.set_mat4("view", view);
+    basic_shader.set_mat4("proj", proj);
 
     while(!quit)
     {
@@ -110,10 +58,11 @@ int main()
         
         Graphics::clear(glm::vec3(0, 0.0f, 0.1f));
 
-        basic_shader.set_mat4("vert_model", glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0)));
+        cube.transform = glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
+        cube.render(&basic_shader);
 
-        glBindVertexArray(vao_id);
-        glDrawElements(GL_TRIANGLES, 3*12, GL_UNSIGNED_INT, 0);
+        cube2.transform = glm::rotate(model2, glm::radians((float)platform.get_time_ms()) / 10.f, glm::vec3(1, 1, 0));
+        cube2.render(&basic_shader);
 
         if(platform.input.keyboard.just_released(Key::A))
             Log::info("%d (%d), %d (%d)", platform.input.mouse.x, platform.input.mouse.global_x, platform.input.mouse.y, platform.input.mouse.global_y);

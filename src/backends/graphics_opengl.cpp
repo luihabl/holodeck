@@ -71,6 +71,11 @@ int Graphics::minor_version()
     return OPENGL_VERSION_MINOR;
 }
 
+void Graphics::init()
+{
+    glEnable(GL_DEPTH_TEST);
+}
+
 // ---- Shader ----
 
 Shader & Shader::use() {

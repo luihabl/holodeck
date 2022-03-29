@@ -60,6 +60,7 @@ void Platform::init(const PlatformConfig& _config)
     }
 
     input.keyboard.init();
+    Graphics::init();
 }
 
 void Platform::update()

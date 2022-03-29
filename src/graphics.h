@@ -18,6 +18,8 @@ namespace holodeck {
         int major_version();
         int minor_version();
 
+        void init();
+
         // void set_blend_mode();
         // void viewport(int w, int h);
         // void viewport(int x, int y, int w, int h);
