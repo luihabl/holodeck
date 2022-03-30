@@ -318,7 +318,10 @@ namespace holodeck
     {
         int global_x = 0, global_y = 0;
         int x = 0, y = 0;
-    };
+		int offset_x = 0, offset_y = 0;
+		bool visible = true;
+		bool relative = false;
+	};
 
 	struct WindowState
 	{

@@ -78,16 +78,30 @@ void Platform::update()
     #endif
 
     SDL_GetGlobalMouseState(&state.mouse.global_x, &state.mouse.global_y);
-    state.mouse.x = state.mouse.global_x - state.win.x;
-    state.mouse.y = state.mouse.global_y - state.win.y;
+
+    int mouse_x, mouse_y;
+    SDL_GetMouseState(&mouse_x, &mouse_y);
+
+    if (state.mouse.relative)
+    {
+        SDL_GetRelativeMouseState(&state.mouse.offset_x, &state.mouse.offset_y);
+    }
+    else
+    {
+        state.mouse.offset_x = mouse_x - state.mouse.x;
+        state.mouse.offset_y = mouse_y - state.mouse.y;
+    }
+
+    state.mouse.x = mouse_x;
+    state.mouse.y = mouse_y;
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) 
     {
         if (event.type == SDL_QUIT)
         {
-            if(config.on_exit) 
-                config.on_exit();
+            if(config.callbacks.on_exit) 
+                config.callbacks.on_exit();
             continue;
         }
         
@@ -112,11 +126,18 @@ void Platform::update()
 
         // }
 
-
-
-
+        else if(event.type == SDL_MOUSEMOTION)
+        {
+            if(config.callbacks.on_mouse_movement)
+                config.callbacks.on_mouse_movement();
+        }
 
     }
+}
+
+void Platform::set_mouse_pos(int x, int y)
+{
+    SDL_WarpMouseInWindow(window, x, y);
 }
 
 void Platform::swap_buffers()
@@ -135,6 +156,32 @@ void Platform::terminate()
 	window = nullptr;
     SDL_GL_DeleteContext(context);
 	SDL_Quit();
+}
+
+void Platform::hide_mouse()
+{
+    state.mouse.visible = false;
+    SDL_ShowCursor(SDL_DISABLE);
+}
+
+void Platform::show_mouse()
+{
+    state.mouse.visible = true;
+    SDL_ShowCursor(SDL_ENABLE);
+}
+
+void Platform::relative_mouse(bool activate)
+{
+    if(activate && !state.mouse.relative)
+    {
+        state.mouse.relative = true;
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+    }
+    else if(!activate && state.mouse.relative)
+    {
+        state.mouse.relative = false;
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+    }   
 }
 
 

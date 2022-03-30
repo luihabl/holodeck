@@ -20,8 +20,11 @@ namespace holodeck
         bool use_opengl = true;
         bool resizable = true;
 
-        std::function<void()> on_exit = nullptr;
-
+        struct Callbacks
+        {
+            std::function<void()> on_exit = nullptr;
+            std::function<void()> on_mouse_movement = nullptr;
+        } callbacks;
     };
 
     struct PlatformState
@@ -29,6 +32,11 @@ namespace holodeck
         KeyboardState keyboard;
         MouseState mouse;
         WindowState win;
+
+        bool mouse_inside()
+        {
+            return (mouse.x > 0 && mouse.x < win.w) && (mouse.y > 0 && mouse.y < win.h);
+        }
     };
 
 
@@ -44,6 +52,13 @@ namespace holodeck
         PlatformState state;
 
         void terminate();
+
+        void set_mouse_pos(int x, int y);
+        void hide_mouse();
+        void show_mouse();
+        void relative_mouse(bool activate = true);
+
+        PlatformConfig::Callbacks& callbacks() { return config.callbacks; }
 
         private:
         PlatformConfig config;

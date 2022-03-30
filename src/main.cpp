@@ -21,10 +21,11 @@ int main()
     config.w = 800;
     config.h = 600;
     config.name = "holodeck";
-    config.on_exit = [&quit]() { quit = true; };
 
     Platform platform;
     platform.init(config);
+    platform.hide_mouse();
+    platform.relative_mouse();
 
     Shader basic_shader = Shader::from_file("contents/shaders/basic.vert.glsl", "contents/shaders/basic.frag.glsl");
     basic_shader.use();
@@ -99,9 +100,15 @@ int main()
 
     platform.update();
 
-    float last_mouse_x = platform.state.win.w / 2;
-    float last_mouse_y = platform.state.win.h / 2;
-    float mouse_sensitivity = 0.2f;
+    // float last_mouse_x = platform.state.win.w / 2;
+    // float last_mouse_y = platform.state.win.h / 2;
+    float mouse_sensitivity = 0.1f;
+    platform.callbacks().on_mouse_movement = [&]()
+    {
+        camera.compute_direction(mouse_sensitivity * (float) platform.state.mouse.offset_x, -mouse_sensitivity * (float) platform.state.mouse.offset_y);
+    };
+
+    platform.callbacks().on_exit = [&quit]() { quit = true; };
 
     while(!quit)
     {
@@ -129,14 +136,6 @@ int main()
         {
             camera.pos += camera.speed * camera.front;
         }
-
-        float x_mouse_offset = (platform.state.mouse.x - last_mouse_x) * mouse_sensitivity;
-        float y_mouse_offset = (last_mouse_y - platform.state.mouse.y) * mouse_sensitivity;
-        last_mouse_x = platform.state.mouse.x;
-        last_mouse_y = platform.state.mouse.y;
-
-        camera.compute_direction(x_mouse_offset, y_mouse_offset);
-
 
         view  = glm::lookAt(camera.pos, camera.pos + camera.front, camera.up);
         basic_shader.set_mat4("view", view);
