@@ -54,6 +54,7 @@ namespace holodeck
         void terminate();
 
         void set_mouse_pos(int x, int y);
+        void set_mouse_focus();
         void hide_mouse();
         void show_mouse();
         void relative_mouse(bool activate = true);

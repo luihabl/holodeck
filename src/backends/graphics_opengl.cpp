@@ -73,6 +73,7 @@ int Graphics::minor_version()
 
 void Graphics::init()
 {
+    Log::info("Graphics: OpenGL %s %s", glGetString(GL_VERSION), glGetString(GL_RENDERER));
     glEnable(GL_DEPTH_TEST);
 }
 

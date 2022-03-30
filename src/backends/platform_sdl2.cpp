@@ -80,7 +80,8 @@ void Platform::update()
     SDL_GetGlobalMouseState(&state.mouse.global_x, &state.mouse.global_y);
 
     int mouse_x, mouse_y;
-    SDL_GetMouseState(&mouse_x, &mouse_y);
+    mouse_x = state.mouse.global_x - state.win.x;
+    mouse_y = state.mouse.global_y - state.win.y;
 
     if (state.mouse.relative)
     {
@@ -126,6 +127,27 @@ void Platform::update()
 
         // }
 
+    //     case SDL_WINDOWEVENT: {
+    //   SDL_WindowEvent e = event->window;
+    //   switch (e.event) {
+    //     case SDL_WINDOWEVENT_ENTER:
+    //       std::cout << "window enter\n";
+    //       break;
+    //     case SDL_WINDOWEVENT_LEAVE:
+    //       std::cout << "window leave\n";
+    //       break;
+    //     default:
+    //       break;
+    //   }
+        // else if(event.type == SDL_WINDOWEVENT)
+        // {
+        //     if(event.window.type == SDL_WINDOWEVENT_ENTER)
+        //     {
+        //         state.mouse.offset_x = 0;
+        //         state.mouse.offset_y = 0;
+        //     }
+        // }
+
         else if(event.type == SDL_MOUSEMOTION)
         {
             if(config.callbacks.on_mouse_movement)
@@ -138,6 +160,11 @@ void Platform::update()
 void Platform::set_mouse_pos(int x, int y)
 {
     SDL_WarpMouseInWindow(window, x, y);
+}
+
+void Platform::set_mouse_focus()
+{
+    SDL_SetWindowInputFocus(window);
 }
 
 void Platform::swap_buffers()

@@ -24,8 +24,6 @@ int main()
 
     Platform platform;
     platform.init(config);
-    platform.hide_mouse();
-    platform.relative_mouse();
 
     Shader basic_shader = Shader::from_file("contents/shaders/basic.vert.glsl", "contents/shaders/basic.frag.glsl");
     basic_shader.use();
@@ -93,19 +91,19 @@ int main()
 
     } camera;
 
-    // camera.last_mouse_x = platform.
-
-
     glm::mat4 view = glm::mat4(1.0f);
 
     platform.update();
-
-    // float last_mouse_x = platform.state.win.w / 2;
-    // float last_mouse_y = platform.state.win.h / 2;
+    
     float mouse_sensitivity = 0.1f;
     platform.callbacks().on_mouse_movement = [&]()
     {
-        camera.compute_direction(mouse_sensitivity * (float) platform.state.mouse.offset_x, -mouse_sensitivity * (float) platform.state.mouse.offset_y);
+        camera.compute_direction(
+            mouse_sensitivity * (float) platform.state.mouse.offset_x, 
+            -mouse_sensitivity * (float) platform.state.mouse.offset_y
+        );
+
+        Log::info("[%d, %d]", platform.state.mouse.offset_x, platform.state.mouse.offset_y);
     };
 
     platform.callbacks().on_exit = [&quit]() { quit = true; };
@@ -114,7 +112,7 @@ int main()
     {
 
         proj = glm::perspective(glm::radians(45.0f), (float) platform.state.win.drawable_w / platform.state.win.drawable_h, 0.1f, 100.0f);
-        basic_shader.set_mat4("proj", proj);        
+        basic_shader.set_mat4("proj", proj);
 
         platform.update();
                 
@@ -124,15 +122,15 @@ int main()
         {
             camera.pos -= camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
         }
-        else if(platform.state.keyboard.pressed(Key::D))
+        if(platform.state.keyboard.pressed(Key::D))
         {
             camera.pos += camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
         }
-        else if(platform.state.keyboard.pressed(Key::S))
+        if(platform.state.keyboard.pressed(Key::S))
         {
             camera.pos -= camera.speed * camera.front;
         }
-        else if(platform.state.keyboard.pressed(Key::W))
+        if(platform.state.keyboard.pressed(Key::W))
         {
             camera.pos += camera.speed * camera.front;
         }
