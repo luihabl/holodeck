@@ -320,11 +320,10 @@ namespace holodeck
         int x = 0, y = 0;
     };
 
-    struct InputState
-    {
-        KeyboardState keyboard;
-        MouseState mouse;
-    };
-
-
+	struct WindowState
+	{
+		int w, h;
+		int drawable_w, drawable_h;
+		int x, y;
+	};
 }

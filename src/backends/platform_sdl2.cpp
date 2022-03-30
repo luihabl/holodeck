@@ -36,7 +36,9 @@ void Platform::init(const PlatformConfig& _config)
     if(config.resizable)
     {
         flags |= SDL_WINDOW_RESIZABLE;
-    }    
+    }
+
+    flags |= SDL_WINDOW_ALLOW_HIGHDPI;
 
     int x = 0;
     if(config.x < 0)
@@ -59,20 +61,25 @@ void Platform::init(const PlatformConfig& _config)
         Graphics::load_gl_functions(SDL_GL_GetProcAddress);
     }
 
-    input.keyboard.init();
+    state.keyboard.init();
     Graphics::init();
 }
 
 void Platform::update()
 {
 
-    input.keyboard.update();
+    state.keyboard.update();
 
-    int win_x, win_y;
-    SDL_GetWindowPosition(window, &win_x, &win_y); 
-    SDL_GetGlobalMouseState(&input.mouse.global_x, &input.mouse.global_y);
-    input.mouse.x = input.mouse.global_x - win_x;
-    input.mouse.y = input.mouse.global_y - win_y;
+    SDL_GetWindowPosition(window, &state.win.x, &state.win.y); 
+    SDL_GetWindowSize(window, &state.win.w, &state.win.h); 
+
+    #ifdef GRAPHICS_OPENGL
+    SDL_GL_GetDrawableSize(window, &state.win.drawable_w, &state.win.drawable_h); 
+    #endif
+
+    SDL_GetGlobalMouseState(&state.mouse.global_x, &state.mouse.global_y);
+    state.mouse.x = state.mouse.global_x - state.win.x;
+    state.mouse.y = state.mouse.global_y - state.win.y;
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) 
@@ -87,12 +94,12 @@ void Platform::update()
         else if (event.type == SDL_KEYDOWN)
         {
             if(event.key.repeat == 0)
-                input.keyboard.on_press((Key) event.key.keysym.scancode);
+                state.keyboard.on_press((Key) event.key.keysym.scancode);
         }
         else if (event.type == SDL_KEYUP)
         {
             if(event.key.repeat == 0)
-                input.keyboard.on_release((Key) event.key.keysym.scancode);
+                state.keyboard.on_release((Key) event.key.keysym.scancode);
         }
 
 

@@ -33,6 +33,7 @@ if(GRAPHICS_OPENGL)
     target_include_directories(holodeck PUBLIC
     external/glad/include
     )
+    add_compile_definitions(GRAPHICS_OPENGL)
 endif()
 
 if(PLATFORM_SDL2)

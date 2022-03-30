@@ -76,6 +76,14 @@ void Graphics::init()
     glEnable(GL_DEPTH_TEST);
 }
 
+void Graphics::viewport(int w, int h) {
+    glViewport(0, 0, w, h);
+}
+
+void Graphics::viewport(int x, int y, int w, int h) {
+    glViewport(x, y, w, h);
+}
+
 // ---- Shader ----
 
 Shader & Shader::use() {

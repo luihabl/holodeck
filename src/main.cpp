@@ -9,6 +9,7 @@
 
 #include <glm/gtc/matrix_transform.hpp> //remove this
 #include <vector>
+#include <cmath>
 
 using namespace holodeck;
 
@@ -45,7 +46,7 @@ int main()
     // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     glm::mat4 proj = glm::mat4(1.0f);
-    proj = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    // proj = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
     // proj = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 0.1f, 50.0f);
 
 
@@ -60,54 +61,85 @@ int main()
         glm::vec3 direction = glm::normalize(pos - target);
         glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), direction));
         glm::vec3 up = glm::cross(direction, right);
-
         glm::vec3 front = glm::vec3(0, 0, -1);
 
+        float speed = 0.2f;
 
+
+        float yaw = -90.0f;
+        float pitch = 0.0f;
+
+        void compute_direction(float delta_yaw, float delta_pitch)
+        {
+
+            yaw += delta_yaw;
+            pitch += delta_pitch;
+
+            if(pitch > 89.0f)
+                pitch =  89.0f;
+            if(pitch < -89.0f)
+                pitch = -89.0f;
+
+            float yawr = glm::radians(yaw);
+            float pitchr = glm::radians(pitch);
+
+            direction.x = cos(yawr) * cos(pitchr);
+            direction.y = sin(pitchr);
+            direction.z = sin(yawr) * cos(pitchr);
+
+            front = glm::normalize(direction);
+        }
 
     } camera;
 
-    glm::mat4 view = glm::lookAt(camera.pos, camera.pos + camera.front, camera.up);
-    basic_shader.set_mat4("view", view);
+    // camera.last_mouse_x = platform.
 
+
+    glm::mat4 view = glm::mat4(1.0f);
+
+    platform.update();
+
+    float last_mouse_x = platform.state.win.w / 2;
+    float last_mouse_y = platform.state.win.h / 2;
+    float mouse_sensitivity = 0.2f;
 
     while(!quit)
     {
+
+        proj = glm::perspective(glm::radians(45.0f), (float) platform.state.win.drawable_w / platform.state.win.drawable_h, 0.1f, 100.0f);
+        basic_shader.set_mat4("proj", proj);        
+
         platform.update();
-        
+                
         Graphics::clear(glm::vec3(0, 0.0f, 0.1f));
 
-        // if(platform.input.keyboard.pressed(Key::A))
-        // {
-        //     view = glm::translate(view, glm::vec3(v, 0, 0));
-        //     basic_shader.set_mat4("view", view);
-        // }
-        // else if(platform.input.keyboard.pressed(Key::D))
-        // {
-        //     view = glm::translate(view, glm::vec3(-v, 0, 0));
-        //     basic_shader.set_mat4("view", view);
-        // }
-        // else if(platform.input.keyboard.pressed(Key::S))
-        // {
-        //     view = glm::translate(view, glm::vec3(0, 0, -v));
-        //     basic_shader.set_mat4("view", view);
-        // }
-        // else if(platform.input.keyboard.pressed(Key::W))
-        // {
-        //     view = glm::translate(view, glm::vec3(0, 0, v));
-        //     basic_shader.set_mat4("view", view);
-        // }
-        // else if(platform.input.keyboard.pressed(Key::Right))
-        // {
-        //     view = glm::rotate(view, glm::radians(-1.0f), glm::vec3(0, 1, 0));
-        //     basic_shader.set_mat4("view", view);
-        // }
-        // else if(platform.input.keyboard.pressed(Key::Left))
-        // {
-        //     view = glm::rotate(view, glm::radians(1.0f), glm::vec3(0, 1, 0));
-        //     basic_shader.set_mat4("view", view);
-        // }
+        if(platform.state.keyboard.pressed(Key::A))
+        {
+            camera.pos -= camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+        }
+        else if(platform.state.keyboard.pressed(Key::D))
+        {
+            camera.pos += camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+        }
+        else if(platform.state.keyboard.pressed(Key::S))
+        {
+            camera.pos -= camera.speed * camera.front;
+        }
+        else if(platform.state.keyboard.pressed(Key::W))
+        {
+            camera.pos += camera.speed * camera.front;
+        }
 
+        float x_mouse_offset = (platform.state.mouse.x - last_mouse_x) * mouse_sensitivity;
+        float y_mouse_offset = (last_mouse_y - platform.state.mouse.y) * mouse_sensitivity;
+        last_mouse_x = platform.state.mouse.x;
+        last_mouse_y = platform.state.mouse.y;
+
+        camera.compute_direction(x_mouse_offset, y_mouse_offset);
+
+
+        view  = glm::lookAt(camera.pos, camera.pos + camera.front, camera.up);
+        basic_shader.set_mat4("view", view);
 
         cube.transform = glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
         cube.render(&basic_shader);

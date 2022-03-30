@@ -24,6 +24,13 @@ namespace holodeck
 
     };
 
+    struct PlatformState
+    {
+        KeyboardState keyboard;
+        MouseState mouse;
+        WindowState win;
+    };
+
 
     class Platform
     {
@@ -34,8 +41,7 @@ namespace holodeck
         void swap_buffers();
         uint64_t get_time_ms();
 
-        InputState input;
-
+        PlatformState state;
 
         void terminate();
 
