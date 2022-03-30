@@ -17,6 +17,7 @@ namespace holodeck {
             void set_float(const char * name, const float & value) const;
             void set_int(const char * name, const int & value) const;
             void set_mat4(const char * name, const glm::mat4 & mat) const;
+            void set_vec4(const char * name, const glm::vec4 & vec) const;
             void set_vec3(const char * name, const glm::vec3 & vec) const;
             void set_vec2(const char * name, const glm::vec2 & vec) const;
             // add other uniform types
