@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "shader.h"
+#include "loader.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -21,6 +22,7 @@ namespace holodeck
 
         void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
         void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
+        void load(const Loader::OBJFile& file);
 
         std::string name;
     

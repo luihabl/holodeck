@@ -5,6 +5,7 @@
 #include "log.h"
 #include "model.h"
 #include "camera.h"
+#include "loader.h"
 
 #include "constants.h"
 
@@ -36,8 +37,11 @@ int main()
         "contents/shaders/light_source.frag.glsl"
     );
 
-    Model cube = Model::unit_cube();
-    Model light_source = cube;
+    Model cube;
+    cube.load(Loader::OBJFile::load("contents/meshes/teapot.obj"));
+
+    // Model cube = Model::unit_cube();
+    Model light_source = Model::unit_cube();
 
     // ---- Matrices ----
 

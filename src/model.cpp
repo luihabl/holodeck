@@ -101,6 +101,11 @@ void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3
     upload_data();
 }
 
+void Model::load(const Loader::OBJFile& file)
+{
+    load(file.positions, file.normals, file.indices);
+}
+
 
 void Model::upload_data()
 {
@@ -129,7 +134,7 @@ Model Model::unit_cube()
 {
     std::vector<glm::vec3> vertices = {
         {-0.5f,  -0.5f,  -0.5f},
-        {0.5f,  -0.5f,  -0.5f},
+        {0.5f,  -0.5f,   -0.5f},
         { 0.5f,   0.5f,  -0.5f},
         {-0.5f,   0.5f,  -0.5f},
         {-0.5f,  -0.5f,   0.5f},

@@ -6,6 +6,8 @@
 #include "file.h"
 #include "log.h"
 
+#include <cstdio>
+
 using namespace holodeck; 
 
 std::string File::load_txt(std::string file_path) {
@@ -32,4 +34,24 @@ unsigned char * File::load_image(std::string file_path, int *w, int *h, int *com
 
 void File::free_image(unsigned char * data) {
     stbi_image_free(data);
+}
+
+File::Raw::~Raw()
+{
+    close();
+}
+
+void File::Raw::open(const std::string& mode)
+{
+    fp = fopen(path.c_str(), mode.c_str());
+    if (!fp)
+    {
+        Log::error("File does not exist: %s", path.c_str());
+        return;
+    }
+}
+
+void File::Raw::close()
+{
+    fclose(fp);
 }
