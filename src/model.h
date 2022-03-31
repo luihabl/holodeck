@@ -19,13 +19,16 @@ namespace holodeck
         void clear();
         void render(Shader* shader = nullptr);
 
-        void load(const std::vector<glm::vec3> & pos, const std::vector<unsigned> _indices);
-        void load(const std::vector<glm::vec4> & pos, const std::vector<unsigned> _indices);
+        void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
+        void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
 
         std::string name;
     
         void compute_transform(const glm::mat4& parent = glm::mat4(1.0f));
 
+        // Model state. You can set either transform or each individual
+        // state and then call compute_transform. Only transform is 
+        // going to be used 
         glm::mat4 transform = glm::mat4(1.0f);
         glm::vec3 translation = glm::vec3(0.0f);
         glm::vec3 scale = glm::vec3(1.0f);

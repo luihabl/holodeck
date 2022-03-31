@@ -65,34 +65,38 @@ void Model::render(Shader* shader)
 	glBindVertexArray(0);
 }
 
-void Model::load(const std::vector<glm::vec3> & pos, const std::vector<unsigned> _indices)
+void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
 {
     if(!initialized)
         return;
 
     indices = _indices;
-    for (const auto& v : pos)
+    for (int i = 0; i < pos.size(); i++)
+    {
         mesh.push_back({
-            glm::vec4(v, 1.0f),
-            glm::vec3(0.0f),
+            glm::vec4(pos[i], 1.0f),
+            normals[i],
             glm::vec2(0.0f)
-        });
+            });
+    }
 
     upload_data();
 }
 
-void Model::load(const std::vector<glm::vec4> & pos, const std::vector<unsigned> _indices)
+void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
 {
     if(!initialized)
         return;
 
     indices = _indices;
-    for (const auto& v : pos)
+    for (int i = 0; i < pos.size(); i++)
+    {
         mesh.push_back({
-            v,
-            glm::vec3(0.0f),
+            pos[i],
+            normals[i],
             glm::vec2(0.0f)
         });
+    }
 
     upload_data();
 }
@@ -124,14 +128,57 @@ void Model::compute_transform(const glm::mat4& parent)
 Model Model::unit_cube()
 {
     std::vector<glm::vec3> vertices = {
-        {-0.5f, -0.5f, -0.5f},
-        { 0.5f, -0.5f, -0.5f},
-        { 0.5f,  0.5f, -0.5f},
-        {-0.5f,  0.5f, -0.5f},
-        {-0.5f, -0.5f,  0.5f},
-        { 0.5f, -0.5f,  0.5f},
-        { 0.5f,  0.5f,  0.5f},
-        {-0.5f,  0.5f,  0.5f}
+        {-0.5f,  -0.5f,  -0.5f},
+        {0.5f,  -0.5f,  -0.5f},
+        { 0.5f,   0.5f,  -0.5f},
+        {-0.5f,   0.5f,  -0.5f},
+        {-0.5f,  -0.5f,   0.5f},
+        { 0.5f,  -0.5f,   0.5f},
+        { 0.5f,   0.5f,   0.5f},
+        {-0.5f,   0.5f,   0.5f},
+        {-0.5f,   0.5f,   0.5f},
+        {-0.5f,   0.5f,  -0.5f},
+        {-0.5f,  -0.5f,  -0.5f},
+        {-0.5f,  -0.5f,   0.5f},
+        { 0.5f,   0.5f,   0.5f},
+        { 0.5f,   0.5f,  -0.5f},
+        { 0.5f,  -0.5f,  -0.5f},
+        { 0.5f,  -0.5f,   0.5f},
+        {-0.5f,  -0.5f,  -0.5f},
+        { 0.5f,  -0.5f,  -0.5f},
+        { 0.5f,  -0.5f,   0.5f},
+        {-0.5f,  -0.5f,   0.5f},
+        {-0.5f,   0.5f,  -0.5f},
+        { 0.5f,   0.5f,  -0.5f},
+        { 0.5f,   0.5f,   0.5f},
+        {-0.5f,   0.5f,   0.5f}
+    };
+
+    std::vector<glm::vec3> normals = {
+        {  0.0f,   0.0f,  -1.0f},
+        {  0.0f,   0.0f,  -1.0f},
+        {  0.0f,   0.0f,  -1.0f},
+        {  0.0f,   0.0f,  -1.0f},
+        {  0.0f,   0.0f,  1.0f},
+        {  0.0f,   0.0f,  1.0f},
+        {  0.0f,   0.0f,  1.0f},
+        {  0.0f,   0.0f,  1.0f},
+        { -1.0f,   0.0f,   0.0f},
+        { -1.0f,   0.0f,   0.0f},
+        { -1.0f,   0.0f,   0.0f},
+        { -1.0f,   0.0f,   0.0f},
+        {  1.0f,   0.0f,   0.0f},
+        {  1.0f,   0.0f,   0.0f},
+        {  1.0f,   0.0f,   0.0f},
+        {  1.0f,   0.0f,   0.0f},
+        {  0.0f,  -1.0f,   0.0f},
+        {  0.0f,  -1.0f,   0.0f},
+        {  0.0f,  -1.0f,   0.0f},
+        {  0.0f,  -1.0f,   0.0f},
+        {  0.0f,   1.0f,   0.0f},
+        {  0.0f,   1.0f,   0.0f},
+        {  0.0f,   1.0f,   0.0f},
+        {  0.0f,   1.0f,   0.0f}
     };
 
     std::vector<unsigned> indices = {
@@ -139,19 +186,19 @@ Model Model::unit_cube()
         2, 3, 0,
         4, 5, 6,
         6, 7, 4,
-        7, 3, 0,
-        0, 4, 7,
-        6, 2, 1,
-        1, 5, 6,
-        0, 1, 5,
-        5, 4, 0,
-        3, 2, 6,
-        6, 7, 3,
+        8, 9, 10,
+        10, 11, 8,
+        12, 13, 14,
+        14, 15, 12,
+        16, 17, 18,
+        18, 19, 16,
+        20, 21, 22,
+        22, 23, 20
     };
 
     Model cube;
     cube.init();
-    cube.load(vertices, indices);
+    cube.load(vertices, normals, indices);
 
     return cube;
 }

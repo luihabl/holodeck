@@ -24,6 +24,7 @@ int main()
 
     Platform platform;
     platform.init(config);
+    platform.relative_mouse();
 
     Shader cube_shader = Shader::from_file(
         "contents/shaders/light.vert.glsl", 
@@ -40,21 +41,23 @@ int main()
 
     // ---- Matrices ----
 
-    glm::vec3 light_pos = glm::vec3(0, 4, -8);
+    glm::vec3 light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
 
     light_source.translation = light_pos;
     light_source.scale = glm::vec3(0.2f);
-    light_source.quaternion = glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
+    // light_source.quaternion = glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
     light_source.compute_transform();
-    
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 800/600, 0.1f, 100.0f);
+
+
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 800/ (float)600, 0.1f, 100.0f);
     cube_shader.use().set_mat4("proj", proj);
     source_shader.use().set_mat4("proj", proj);
 
     glm::vec4 light_color = Color::white;
 
+    cube_shader.use().set_vec4("light_pos", glm::vec4(light_pos, 1.0f));
     cube_shader.use().set_vec4("light_color", light_color);
-    cube_shader.use().set_vec4("object_color", Color::cyan);
+    cube_shader.use().set_vec4("object_color", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
     source_shader.use().set_vec4("light_color", light_color);
 
     Camera camera;
@@ -92,11 +95,11 @@ int main()
         }
 
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
-        source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
-
-        cube.transform = glm::rotate(glm::mat4(1.0f), glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
+        cube_shader.use().set_vec3("view_pos", camera.pos);
+        // cube.transform = glm::rotate(glm::mat4(1.0f), glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
         cube.render(&cube_shader);
 
+        source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
         light_source.render(&source_shader);
 
         platform.swap_buffers();
