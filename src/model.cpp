@@ -1,6 +1,7 @@
 #include "model.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace holodeck;
 
@@ -57,7 +58,7 @@ void Model::clear()
 void Model::render(Shader* shader)
 {
     if(shader)
-        shader->set_mat4("model", transform);
+        shader->use().set_mat4("model", transform);
 
     glBindVertexArray(vao_id);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -110,6 +111,14 @@ void Model::upload_data()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
 
     glBindVertexArray(0);
+}
+
+void Model::compute_transform(const glm::mat4& parent)
+{
+    transform = parent;
+    transform = glm::translate(transform, translation);
+    transform = transform * glm::toMat4(quaternion);
+    transform = glm::scale(transform, scale);
 }
 
 Model Model::unit_cube()

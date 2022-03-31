@@ -3,6 +3,7 @@
 #include "shader.h"
 
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <vector>
 #include <string>
@@ -22,7 +23,13 @@ namespace holodeck
         void load(const std::vector<glm::vec4> & pos, const std::vector<unsigned> _indices);
 
         std::string name;
-        glm::mat4 transform;
+    
+        void compute_transform(const glm::mat4& parent = glm::mat4(1.0f));
+
+        glm::mat4 transform = glm::mat4(1.0f);
+        glm::vec3 translation = glm::vec3(0.0f);
+        glm::vec3 scale = glm::vec3(1.0f);
+        glm::quat quaternion = glm::quat(glm::vec4(0.0f));
 
         static Model unit_cube();
     

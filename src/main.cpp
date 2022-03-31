@@ -9,7 +9,6 @@
 #include "constants.h"
 
 #include <glm/gtc/matrix_transform.hpp> //remove this
-#include <vector>
 #include <cmath>
 
 using namespace holodeck;
@@ -26,27 +25,37 @@ int main()
     Platform platform;
     platform.init(config);
 
-    Shader basic_shader = Shader::from_file(
-        "contents/shaders/light_cube.vert.glsl", 
-        "contents/shaders/light_cube.frag.glsl"
+    Shader cube_shader = Shader::from_file(
+        "contents/shaders/light.vert.glsl", 
+        "contents/shaders/light.frag.glsl"
     );
-    basic_shader.use();
+
+    Shader source_shader = Shader::from_file(
+        "contents/shaders/light_source.vert.glsl", 
+        "contents/shaders/light_source.frag.glsl"
+    );
 
     Model cube = Model::unit_cube();
-    Model cube2 = cube;
+    Model light_source = cube;
 
     // ---- Matrices ----
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 model2 = glm::mat4(1.0f);
-    model2 = glm::translate(model2, glm::vec3(0, 4, -8));
-    model2 = glm::rotate(model2, glm::radians(20.0f), glm::vec3(1, 0, 0));
 
-    glm::mat4 view = glm::mat4(1.0f);
+    glm::vec3 light_pos = glm::vec3(0, 4, -8);
+
+    light_source.translation = light_pos;
+    light_source.scale = glm::vec3(0.2f);
+    light_source.quaternion = glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
+    light_source.compute_transform();
     
     glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 800/600, 0.1f, 100.0f);
-    basic_shader.set_mat4("proj", proj);
+    cube_shader.use().set_mat4("proj", proj);
+    source_shader.use().set_mat4("proj", proj);
 
-    basic_shader.set_vec4("light_color", Color::white);
+    glm::vec4 light_color = Color::white;
+
+    cube_shader.use().set_vec4("light_color", light_color);
+    cube_shader.use().set_vec4("object_color", Color::cyan);
+    source_shader.use().set_vec4("light_color", light_color);
 
     Camera camera;
     
@@ -82,14 +91,13 @@ int main()
             camera.pos += camera.speed * camera.front;
         }
 
-        view  = glm::lookAt(camera.pos, camera.pos + camera.front, camera.up);
-        basic_shader.set_mat4("view", view);
+        cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
+        source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
 
-        cube.transform = glm::rotate(model, glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
-        cube.render(&basic_shader);
+        cube.transform = glm::rotate(glm::mat4(1.0f), glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
+        cube.render(&cube_shader);
 
-        cube2.transform = glm::rotate(model2, glm::radians((float)platform.get_time_ms()) / 10.f, glm::vec3(1, 1, 0));
-        cube2.render(&basic_shader);
+        light_source.render(&source_shader);
 
         platform.swap_buffers();
     }
