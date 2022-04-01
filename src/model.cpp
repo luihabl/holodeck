@@ -100,12 +100,6 @@ void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3
     upload_data();
 }
 
-void Model::load(const Loader::OBJFile& file)
-{
-    load(file.positions, file.normals, file.indices);
-}
-
-
 void Model::upload_data()
 {
     glBindVertexArray(vao_id);

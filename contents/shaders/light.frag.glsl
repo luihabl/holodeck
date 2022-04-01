@@ -15,6 +15,7 @@ void main()
     float ambient_factor = 0.1f;
     float diffuse_factor = 1.0f;
     float specular_factor = 0.5f;
+    float shininess = 32;
 
     // Vectors
     vec3 normal = normalize(frag_normal);
@@ -29,7 +30,7 @@ void main()
     vec4 diffuse_light = diffuse_factor * light_color * max(dot(normal, light_dir), 0.0f);
 
     // Specular light
-    vec4 specular_light = specular_factor * light_color * pow(max(dot(view_dir, reflect_dir), 0.0f), 32);
+    vec4 specular_light = specular_factor * light_color * pow(max(dot(view_dir, reflect_dir), 0.0f), shininess);
 
     // Final color
     frag_color = (ambient_light + diffuse_light + specular_light) * object_color;

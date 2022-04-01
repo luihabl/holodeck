@@ -22,7 +22,12 @@ namespace holodeck
 
         void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
         void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
-        void load(const Loader::OBJFile& file);
+
+        template <typename LoaderType>
+        void load(const LoaderType& loader)
+        {
+            load(loader.positions, loader.normals, loader.indices);
+        }
 
         std::string name;
     
