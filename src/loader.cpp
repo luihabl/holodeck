@@ -38,17 +38,13 @@ OBJFile OBJFile::load(const std::filesystem::path& file_path)
             obj.positions.push_back({x, y, z});
         }
         
-
         else if(c[0] == 'f' && c[1] == ' ')
         {   
             unsigned i0, i1, i2, ignore;
             sscanf(c, "f %u//%u %u//%u %u//%u", &i0, &ignore, &i1, &ignore, &i2, &ignore);
-            obj.indices.insert(obj.indices.end(), {i0, i1, i2});
+            obj.indices.insert(obj.indices.end(), {i0 - 1, i1 - 1, i2 - 1});
         }
         
-
-
-
     }
 
     return obj;

@@ -67,8 +67,7 @@ void Model::render(Shader* shader)
 
 void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
 {
-    if(!initialized)
-        return;
+    init();
 
     indices = _indices;
     for (int i = 0; i < pos.size(); i++)
@@ -85,8 +84,8 @@ void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3
 
 void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
 {
-    if(!initialized)
-        return;
+    init();
+        
 
     indices = _indices;
     for (int i = 0; i < pos.size(); i++)
