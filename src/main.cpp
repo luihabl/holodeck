@@ -38,7 +38,7 @@ int main()
     );
 
     Model cube;
-    cube.load(Loader::OBJFile::load("contents/meshes/teapot.obj"));
+    cube.load(Loader::OBJFile("contents/meshes/teapot.obj"));
 
     // Model cube = Model::unit_cube();
     Model light_source = Model::unit_cube();

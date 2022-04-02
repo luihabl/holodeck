@@ -11,15 +11,15 @@ namespace holodeck
     {
         struct OBJFile
         {
+            OBJFile() = default;
+            OBJFile(const std::filesystem::path& file_path);
+
             std::filesystem::path path;
 
-            std::vector<glm::vec3> positions;
+            std::vector<glm::vec4> positions;
             std::vector<glm::vec3> normals;
             std::vector<glm::vec2> uv;
             std::vector<unsigned> indices;
-
-            static OBJFile load(const std::filesystem::path& file_path);
-            void clear();
 
         };
 
