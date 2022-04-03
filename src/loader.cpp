@@ -1,8 +1,11 @@
 #include "loader.h"
 
 #include "file.h"
+#include "log.h"
 
 #include <sstream>
+#include <array>
+#include <algorithm>
 
 using namespace holodeck::Loader;
 
@@ -21,11 +24,6 @@ std::vector<std::string> split (const std::string &s, char delim) {
 
 bool is_number(const std::string& str)
 {
-    // for (char const &c : str) {
-    //     if (std::isdigit(c) == 0) return false;
-    // }
-    // return true;
-
     try
     {
         stod(str);
@@ -55,7 +53,42 @@ bool valid_numeric_entry(unsigned index, std::vector<T>& vec)
     return is_number(vec[index]) && !vec[index].empty();
 }
 
-#include "log.h"
+template <size_t N_INDEX>
+void generate_global_indices(
+    const std::array<std::vector<unsigned>, N_INDEX> indices_list,
+    std::vector<unsigned>& out_global_indices,
+    std::vector<std::array<int, N_INDEX>>& out_grouped_indices
+)
+{
+    out_global_indices = {};
+    out_grouped_indices = {};
+
+    unsigned size = indices_list[0].size();   
+    for (int i = 0; i < size; i++)
+    {
+        std::array<int, N_INDEX> group;
+        for (int j = 0; j < N_INDEX; j++)
+        {
+            if(i < indices_list[j].size())
+                group[j] = indices_list[j][i];
+            else
+                group[j] = -1;
+        }
+            
+        auto it = std::find(out_grouped_indices.begin(), out_grouped_indices.end(), group);
+        if (it != out_grouped_indices.end())
+        {  
+            size_t id = std::distance(out_grouped_indices.begin(), it);
+            out_global_indices.push_back(id);
+        }
+        else
+        {
+            out_grouped_indices.push_back(group);
+            out_global_indices.push_back(out_grouped_indices.size() - 1);
+        }
+    }
+}
+
 OBJFile::OBJFile(const std::filesystem::path& file_path)
 {
 
@@ -66,13 +99,13 @@ OBJFile::OBJFile(const std::filesystem::path& file_path)
 
     char c[512];
         
-    positions = {};
-    normals = {};
-    uv = {};
+    std::vector<glm::vec4> packed_positions = {};
+    std::vector<glm::vec3> packed_normals = {};
+    std::vector<glm::vec2> packed_uv = {};
     
     std::vector<unsigned> indices_pos;
-    std::vector<unsigned> indices_uv;
     std::vector<unsigned> indices_n;
+    std::vector<unsigned> indices_uv;
 
     while(!file.eof())
     {
@@ -91,7 +124,20 @@ OBJFile::OBJFile(const std::filesystem::path& file_path)
                 if(valid_numeric_entry(i, comp))
                     normal[i - 1] = convert_to<float>(comp[i]);
             }
-            normals.push_back(normal);
+            packed_normals.push_back(normal);
+        }
+
+        else if(c[0] == 'v' && c[1] == 't')
+        {
+            glm::vec2 u(1.0f);
+            
+            auto comp = split(c, ' ');
+            for (int i = 1; i < 3; i++)
+            {
+                if(valid_numeric_entry(i, comp))
+                    u[i - 1] = convert_to<float>(comp[i]);
+            }
+            packed_uv.push_back(u);
         }
 
         else if(c[0] == 'v' && c[1] == ' ')
@@ -105,7 +151,7 @@ OBJFile::OBJFile(const std::filesystem::path& file_path)
                 if(valid_numeric_entry(i, comp))
                     pos[i - 1] = convert_to<float>(comp[i]);
             }
-            positions.push_back(pos);
+            packed_positions.push_back(pos);
         }
         
         else if(c[0] == 'f' && c[1] == ' ')
@@ -124,10 +170,33 @@ OBJFile::OBJFile(const std::filesystem::path& file_path)
                 if(valid_numeric_entry(2, index_fields))
                     indices_n.push_back(convert_to<unsigned>(index_fields[2]) - 1);               
             }
-        }
+        }        
+    }
 
-        // For debugging
-        indices = indices_pos;
+
+
+    // For debugging
+    // indices = indices_pos;
+    // positions = packed_positions;
+    // normals = packed_normals;
+    // uv = packed_uv;
+
+    std::vector<std::array<int, 3>> packed_indices;
+    generate_global_indices({indices_pos, indices_n, indices_uv}, indices, packed_indices);
+
+    positions = {};
+    normals = {};
+    uv = {};
+
+    for (const auto& group : packed_indices)
+    {
+        if (group[0] >= 0)
+            positions.push_back(packed_positions[group[0]]);
         
+        if (group[1] >= 0)
+            normals.push_back(packed_normals[group[1]]);
+
+        if (group[2] >= 0)    
+            uv.push_back(packed_uv[group[2]]);
     }
 }
