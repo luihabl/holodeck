@@ -79,6 +79,19 @@ namespace holodeck
 
         };
 
+        struct PNGFile : public FileLoader
+        {
+
+            int w = 0, h = 0, n_comp = 0;
+            unsigned char* data = nullptr;
+
+            PNGFile(const std::filesystem::path& file_path);
+            ~PNGFile();
+        };
+
+
+
+
 
 
     }

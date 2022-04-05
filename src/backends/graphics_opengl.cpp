@@ -273,10 +273,26 @@ void Texture::load(const Loader::DDSFile& dds)
     // Generate mipmaps, by the way.
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::load(const Loader::PNGFile& png)
+{
+
+    glGenTextures(1, &this->id);
+
+    glBindTexture(GL_TEXTURE_2D, this->id);
+
+    GLint format = png.n_comp == 3 ? GL_RGB : GL_RGBA;
+    glTexImage2D(GL_TEXTURE_2D, 0, format, png.w, png.h, 0, format, GL_UNSIGNED_BYTE, png.data);
+
+    // add a way to set these parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
-
-
 }
 
 #pragma endregion

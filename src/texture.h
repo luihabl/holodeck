@@ -17,6 +17,7 @@ namespace holodeck
 
         void bind() const;
         void load(const Loader::DDSFile& dds);
+        void load(const Loader::PNGFile& png);
 
         static Texture empty(int w, int h);
     };

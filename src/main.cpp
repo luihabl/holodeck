@@ -42,7 +42,7 @@ int main()
     cube.load(Loader::OBJFile("contents/meshes/suzanne.obj", true));
 
     Texture tex;
-    tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
+    tex.load(Loader::PNGFile("contents/meshes/sample-bumblebee-400x300.png"));
 
     // Model cube = Model::unit_cube();
     Model light_source = Model::unit_cube();

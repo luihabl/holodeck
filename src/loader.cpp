@@ -250,3 +250,15 @@ DDSFile::DDSFile(const std::filesystem::path &file_path)
             height = 1;
     }
 }
+
+PNGFile::PNGFile(const std::filesystem::path &file_path)
+{
+    path = file_path;
+    this->data = File::load_image(file_path, &this->w, &this->h, &this->n_comp);
+    if(!data) Log::warn("PNG file not found: %s", file_path.c_str());
+}
+
+PNGFile::~PNGFile()
+{
+    File::free_image(this->data);
+}
