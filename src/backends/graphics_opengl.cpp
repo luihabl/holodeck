@@ -1,5 +1,7 @@
 #include "../graphics.h"
 #include "../shader.h"
+#include "../texture.h"
+#include "../model.h"
 #include "../log.h"
 #include "../file.h"
 
@@ -44,7 +46,7 @@ void main()\n\
 
 using namespace holodeck;
 
-// ---- Graphics ----
+#pragma region Graphics //====================================================================
 
 void Graphics::load_gl_functions(GLLoaderFunction gl_loader)
 {
@@ -85,7 +87,9 @@ void Graphics::viewport(int x, int y, int w, int h) {
     glViewport(x, y, w, h);
 }
 
-// ---- Shader ----
+#pragma endregion
+
+#pragma region Shader //======================================================================
 
 Shader & Shader::use() {
     if(this->compiled) {
@@ -209,3 +213,67 @@ void Shader::set_vec4(const char * name, const glm::vec4 & vec) const {
 // void Shader::set_dvec2(const char * name, const DVec2 & vec) const {
 //     glUniform2d(glGetUniformLocation(this->id, name), vec[0], vec[1]);
 // }
+
+#pragma endregion
+
+#pragma region Texture
+
+void Texture::bind() const
+{
+    glBindTexture(GL_TEXTURE_2D, this->id); 
+}
+
+void Texture::load(const Loader::DDSFile& dds)
+{
+
+    GLuint format;
+    switch(dds.format)
+    {
+    case Loader::DDSFile::Compression::DXT1:
+        format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        break;
+    case Loader::DDSFile::Compression::DXT3:
+        format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+        break;
+    case Loader::DDSFile::Compression::DXT5:
+        format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+        break;
+    default:
+        break;
+    }
+
+    glGenTextures(1, &this->id);
+    glBindTexture(GL_TEXTURE_2D, this->id);
+
+    unsigned int width = dds.header.dwWidth;
+    unsigned int height = dds.header.dwHeight;
+
+    unsigned int offset = 0;
+
+    for (unsigned int level = 0; level < dds.header.dwMipMapCount; ++level)
+    {
+        glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 
+            0, dds.data[level].size(), dds.data[level].data() + offset);
+
+        offset += dds.data[level].size();
+        width  /= 2;
+        height /= 2;
+    }
+
+    // GLint format = n_comp == 3 ? GL_RGB : GL_RGBA;
+    // glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
+
+    // full_rect = {0, 0, (float) w, (float) h};
+
+    // // add a way to set these parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+}
+
+#pragma endregion

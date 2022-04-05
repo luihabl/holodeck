@@ -6,6 +6,7 @@
 #include "model.h"
 #include "camera.h"
 #include "loader.h"
+#include "texture.h"
 
 #include "constants.h"
 
@@ -39,6 +40,9 @@ int main()
 
     Model cube;
     cube.load(Loader::OBJFile("contents/meshes/suzanne.obj"));
+
+    Texture tex;
+    tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
 
     // Model cube = Model::unit_cube();
     Model light_source = Model::unit_cube();
