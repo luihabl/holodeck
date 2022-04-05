@@ -20,13 +20,13 @@ namespace holodeck
         void clear();
         void render(Shader* shader = nullptr);
 
-        void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
-        void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices);
+        void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices);
+        void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices);
 
         template <typename LoaderType>
         void load(const LoaderType& loader)
         {
-            load(loader.positions, loader.normals, loader.indices);
+            load(loader.positions, loader.normals, loader.uv, loader.indices);
         }
 
         std::string name;

@@ -89,7 +89,7 @@ void generate_global_indices(
     }
 }
 
-OBJFile::OBJFile(const std::filesystem::path &file_path)
+OBJFile::OBJFile(const std::filesystem::path &file_path, bool invert_uv)
 {
 
     path = file_path;
@@ -189,7 +189,14 @@ OBJFile::OBJFile(const std::filesystem::path &file_path)
             normals.push_back(packed_normals[group[1]]);
 
         if (group[2] >= 0)
-            uv.push_back(packed_uv[group[2]]);
+        {
+            glm::vec2 tmp = packed_uv[group[2]];
+            if (invert_uv)
+                tmp.y = 1.0f - tmp.y;
+
+            uv.push_back(tmp);
+        }
+            
     }
 }
 

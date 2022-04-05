@@ -65,34 +65,53 @@ void Model::render(Shader* shader)
 	glBindVertexArray(0);
 }
 
-void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
+void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices)
 {
     init();
 
     indices = _indices;
     for (int i = 0; i < pos.size(); i++)
     {
+
+        glm::vec3 position(0.0f);
+        if(i < pos.size()) position = pos[i];
+
+        glm::vec3 normal(0.0f);
+        if(i < normals.size()) normal = normals[i];
+
+        glm::vec2 tex_pos(0.0f);
+        if(i < uv.size()) tex_pos = uv[i];
+
         mesh.push_back({
-            glm::vec4(pos[i], 1.0f),
-            normals[i],
-            glm::vec2(0.0f)
+            glm::vec4(position, 1.0f),
+            normal,
+            tex_pos
             });
     }
 
     upload_data();
 }
 
-void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<unsigned> _indices)
+void Model::load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices)
 {
     init();
     
     indices = _indices;
     for (int i = 0; i < pos.size(); i++)
     {
+        glm::vec4 position(0.0f);
+        if(i < pos.size()) position = pos[i];
+
+        glm::vec3 normal(0.0f);
+        if(i < normals.size()) normal = normals[i];
+
+        glm::vec2 tex_pos(0.0f);
+        if(i < uv.size()) tex_pos = uv[i];
+
         mesh.push_back({
-            pos[i],
-            normals[i],
-            glm::vec2(0.0f)
+            position,
+            normal,
+            tex_pos
         });
     }
 
@@ -195,7 +214,7 @@ Model Model::unit_cube()
 
     Model cube;
     cube.init();
-    cube.load(vertices, normals, indices);
+    cube.load(vertices, normals, {}, indices);
 
     return cube;
 }

@@ -20,7 +20,7 @@ namespace holodeck
 
         struct OBJFile : public FileLoader
         {
-            OBJFile(const std::filesystem::path& file_path);
+            OBJFile(const std::filesystem::path& file_path, bool invert_uv = false);
 
             std::vector<glm::vec4> positions;
             std::vector<glm::vec3> normals;

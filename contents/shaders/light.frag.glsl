@@ -3,11 +3,13 @@ out vec4 frag_color;
 
 in vec4 frag_pos;
 in vec3 frag_normal;
+in vec2 frag_uv;
 
 uniform vec4 light_pos;
 uniform vec4 light_color;
 uniform vec4 object_color;
 uniform vec3 view_pos;
+uniform sampler2D tex_sampler;
 
 void main()
 {
@@ -33,6 +35,8 @@ void main()
     vec4 specular_light = specular_factor * light_color * pow(max(dot(view_dir, reflect_dir), 0.0f), shininess);
 
     // Final color
-    frag_color = (ambient_light + diffuse_light + specular_light) * object_color;
+    vec4 color = texture(tex_sampler, frag_uv);
+
+    frag_color = (ambient_light + diffuse_light + specular_light) * color;
 }
 
