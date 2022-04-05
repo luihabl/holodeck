@@ -39,7 +39,7 @@ int main()
     );
 
     Model cube;
-    cube.load(Loader::OBJFile("contents/meshes/suzanne.obj"));
+    cube.load(Loader::OBJFile("contents/meshes/suzanne.obj", true));
 
     Texture tex;
     tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
@@ -105,6 +105,10 @@ int main()
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
         cube_shader.use().set_vec3("view_pos", camera.pos);
         // cube.transform = glm::rotate(glm::mat4(1.0f), glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
+
+        tex.bind();
+        cube_shader.use().set_int("tex_sampler", 0);
+        
         cube.render(&cube_shader);
 
         source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
