@@ -225,55 +225,52 @@ void Texture::bind() const
 
 void Texture::load(const Loader::DDSFile& dds)
 {
+	unsigned int components  = (dds.format == Loader::DDSFile::Compression::DXT1) ? 3 : 4; 
+	unsigned int format;
+	switch(dds.format) 
+	{ 
+	case Loader::DDSFile::Compression::DXT1: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; 
+		break; 
+	case Loader::DDSFile::Compression::DXT3: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; 
+		break; 
+	case Loader::DDSFile::Compression::DXT5: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+		break; 
+	default: 
+		return; 
+	}
 
-    GLuint format;
-    switch(dds.format)
-    {
-    case Loader::DDSFile::Compression::DXT1:
-        format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-        break;
-    case Loader::DDSFile::Compression::DXT3:
-        format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-        break;
-    case Loader::DDSFile::Compression::DXT5:
-        format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-        break;
-    default:
-        break;
-    }
+	// Create one OpenGL texture
+	glGenTextures(1, &this->id);
 
-    glGenTextures(1, &this->id);
-    glBindTexture(GL_TEXTURE_2D, this->id);
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, this->id);
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1);	
+	
+	unsigned int block_size = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16; 
+	unsigned int offset = 0;
 
     unsigned int width = dds.header.dwWidth;
     unsigned int height = dds.header.dwHeight;
 
-    unsigned int offset = 0;
+	/* load the mipmaps */ 
+	for (unsigned int level = 0; level < dds.header.dwMipMapCount && (width || height); ++level) 
+	{ 
+		unsigned int size = ((width+3)/4)*((height+3)/4)*block_size; 
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,  
+			0, size, dds.data.data() + offset); 
+	 
+		offset += size; 
+		width  /= 2; 
+		height /= 2; 
 
-    for (unsigned int level = 0; level < dds.header.dwMipMapCount; ++level)
-    {
-        glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height, 
-            0, dds.data[level].size(), dds.data[level].data() + offset);
+		// Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
+		if(width < 1) width = 1;
+		if(height < 1) height = 1;
 
-        offset += dds.data[level].size();
-        width  /= 2;
-        height /= 2;
-    }
-
-    // GLint format = n_comp == 3 ? GL_RGB : GL_RGBA;
-    // glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
-
-    // full_rect = {0, 0, (float) w, (float) h};
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // Generate mipmaps, by the way.
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+	} 
 }
 
 void Texture::load(const Loader::PNGFile& png)

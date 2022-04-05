@@ -222,33 +222,8 @@ DDSFile::DDSFile(const std::filesystem::path &file_path)
     DWORD_local bufsize = header.dwPitchOrLinearSize;
     bufsize = header.dwMipMapCount > 1 ? 2 * bufsize : bufsize;
 
-    std::vector<unsigned char> temp_data(bufsize);
-    fread(temp_data.data(), sizeof(unsigned char), bufsize, file.fp);
-
-    data.resize(header.dwMipMapCount);
-
-    block_size = format == Compression::DXT1 ? 8 : 16;
-    unsigned int width = header.dwWidth;
-    unsigned int height = header.dwHeight;
-    unsigned int i0 = 0, i1 = 0;
-
-    for (int i = 0; i < header.dwMipMapCount; i++)
-    {       
-        unsigned int size = ((width + 3) / 4) * ((height + 3) / 4) * block_size;
-        
-        i1 = size;
-        data[i] = std::vector<unsigned char>(temp_data.begin() + i0, temp_data.end() + i1 + 1);
-
-        i0 += size;
-        width /= 2;
-        height /= 2;
-
-        // Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
-        if (width < 1)
-            width = 1;
-        if (height < 1)
-            height = 1;
-    }
+    data.resize(bufsize);
+    fread(data.data(), sizeof(unsigned char), bufsize, file.fp);
 }
 
 PNGFile::PNGFile(const std::filesystem::path &file_path)

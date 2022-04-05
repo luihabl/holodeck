@@ -35,7 +35,7 @@ namespace holodeck
             // ~DDSFile();
             void clear();
             
-            std::vector<std::vector<unsigned char>> data;
+            std::vector<unsigned char> data;
 
             enum class Compression
             {
@@ -74,9 +74,6 @@ namespace holodeck
                 DWORD_local     dwCaps4;
                 DWORD_local     dwReserved2;
             } header;
-
-            DWORD_local block_size;
-
         };
 
         struct PNGFile : public FileLoader
