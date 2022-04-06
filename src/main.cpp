@@ -42,21 +42,29 @@ int main()
     cube.load(Loader::OBJFile("contents/meshes/suzanne.obj", true));
 
     Model lines = Model::grid(10, 10);
-
-    // std::vector<glm::vec3> indices
-
-
-
+    // lines.translation = glm::vec3(0.0f, 0.0f, -25.0f);
     
-    // lines.load({
-    //     {0.f, 1.f, 0.f}, 
-    //     {0.f, 0.f, -10000.0f},
-    //     {0.f, 2.f, -10.0f}
-    //     }, 
-    //     {}, 
-    //     {}, 
-    //     {0, 1,
-    //      1, 2});
+    // lines.compute_transform();
+    float grid_scale = 25.0f;
+    lines.scale = glm::vec3(2.0f * grid_scale);
+    std::vector<glm::vec3> grid_translations = 
+    {
+        {0.0f, 0.0f, - grid_scale},
+        {0.0f, 0.0f, grid_scale},
+        {0.0f, - grid_scale, 0.0f},
+        {0.0f, grid_scale, 0.0f},   
+        {- grid_scale, 0.0f, 0.0f},
+        {grid_scale, 0.0f, 0.0f}
+    };
+    std::vector<glm::vec3> grid_rotations = 
+    {
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+        glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+        glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
+        glm::vec3(0.0f, glm::radians(90.0f), 0.0f)
+    };
     lines.mode = Model::DrawMode::Lines;
 
     Texture tex;
@@ -68,7 +76,6 @@ int main()
     // ---- Matrices ----
 
     glm::vec3 light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
-
     light_source.translation = light_pos;
     light_source.scale = glm::vec3(0.2f);
     // light_source.quaternion = glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
@@ -133,7 +140,19 @@ int main()
         light_source.render(&source_shader);
         
         source_shader.set_vec4("color", Color::yellow);
-        lines.render(&source_shader);
+
+        for (int i = 0; i < 6; i++)
+        {
+            lines.quaternion = glm::quat(grid_rotations[i]);
+            lines.translation = grid_translations[i];
+            lines.compute_transform();
+
+            lines.render(&source_shader);
+        }
+
+
+
+        
 
         platform.swap_buffers();
     }
