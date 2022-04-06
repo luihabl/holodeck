@@ -18,7 +18,7 @@ namespace holodeck
 
         void init();
         void clear();
-        void render(Shader* shader = nullptr);
+        void render(Shader* _shader = nullptr);
 
         void load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices);
         void load(const std::vector<glm::vec4> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices);
@@ -41,7 +41,17 @@ namespace holodeck
         glm::vec3 scale = glm::vec3(1.0f);
         glm::quat quaternion = glm::quat(glm::vec4(0.0f));
 
+        Shader* shader = nullptr;
+
+        bool wireframe = false;
+        enum class DrawMode
+        {
+            Triangles,
+            Lines
+        } mode = DrawMode::Triangles;
+
         static Model unit_cube();
+        static Model grid(int nx, int ny, float l_x = 1.0f, float l_y = 1.0f);
     
     private:
 

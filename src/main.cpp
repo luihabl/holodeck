@@ -34,12 +34,30 @@ int main()
     );
 
     Shader source_shader = Shader::from_file(
-        "contents/shaders/light_source.vert.glsl", 
-        "contents/shaders/light_source.frag.glsl"
+        "contents/shaders/const.vert.glsl", 
+        "contents/shaders/const.frag.glsl"
     );
 
     Model cube;
     cube.load(Loader::OBJFile("contents/meshes/suzanne.obj", true));
+
+    Model lines = Model::grid(10, 10);
+
+    // std::vector<glm::vec3> indices
+
+
+
+    
+    // lines.load({
+    //     {0.f, 1.f, 0.f}, 
+    //     {0.f, 0.f, -10000.0f},
+    //     {0.f, 2.f, -10.0f}
+    //     }, 
+    //     {}, 
+    //     {}, 
+    //     {0, 1,
+    //      1, 2});
+    lines.mode = Model::DrawMode::Lines;
 
     Texture tex;
     tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
@@ -66,7 +84,7 @@ int main()
     cube_shader.use().set_vec4("light_pos", glm::vec4(light_pos, 1.0f));
     cube_shader.use().set_vec4("light_color", light_color);
     cube_shader.use().set_vec4("object_color", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
-    source_shader.use().set_vec4("light_color", light_color);
+    source_shader.use().set_vec4("color", light_color);
 
     Camera camera;
     
@@ -83,7 +101,7 @@ int main()
     {
         platform.update();
                 
-        Graphics::clear(glm::vec3(0, 0.0f, 0.1f));
+        Graphics::clear(Color::black);
 
         if(platform.state.keyboard.pressed(Key::A))
         {
@@ -108,11 +126,14 @@ int main()
 
         tex.bind();
         cube_shader.use().set_int("tex_sampler", 0);
-        
         cube.render(&cube_shader);
 
         source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
+        source_shader.set_vec4("color", light_color);
         light_source.render(&source_shader);
+        
+        source_shader.set_vec4("color", Color::yellow);
+        lines.render(&source_shader);
 
         platform.swap_buffers();
     }

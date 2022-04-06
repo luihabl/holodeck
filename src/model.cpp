@@ -55,14 +55,38 @@ void Model::clear()
     indices.clear();
 }
 
-void Model::render(Shader* shader)
+void Model::render(Shader* _shader)
 {
-    if(shader)
+    if(_shader)
+        _shader->use().set_mat4("model", transform);
+    else if(shader)
         shader->use().set_mat4("model", transform);
 
+    if (wireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     glBindVertexArray(vao_id);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+    GLenum draw_mode;
+    switch (mode)
+    {
+        case DrawMode::Triangles:
+            draw_mode = GL_TRIANGLES;
+            break;
+
+        case DrawMode::Lines:
+            draw_mode = GL_LINES;
+            break;
+
+        default:
+            draw_mode = GL_TRIANGLES;
+    }
+
+	glDrawElements(draw_mode, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+    if (wireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void Model::load(const std::vector<glm::vec3> & pos, const std::vector<glm::vec3> & normals, const std::vector<glm::vec2> & uv, const std::vector<unsigned> _indices)
@@ -213,8 +237,37 @@ Model Model::unit_cube()
     };
 
     Model cube;
-    cube.init();
     cube.load(vertices, normals, {}, indices);
 
     return cube;
+}
+
+Model Model::grid(int nx, int ny, float l_x, float l_y)
+{
+    float dx = l_x / ((float) nx - 1.0f); 
+    float dy = l_y / ((float) ny - 1.0f); 
+
+    std::vector<glm::vec3> vertices;
+    std::vector<unsigned> indices;
+
+    for(int i = 0; i < nx; i++)
+    {
+        vertices.push_back({-l_x / 2.0f, (float) i * dy - l_y / 2.0f, 0.0f});
+        indices.push_back(vertices.size() - 1);
+        vertices.push_back({l_x / 2.0f, (float) i * dy - l_y / 2.0f, 0.0f});
+        indices.push_back(vertices.size() - 1);
+    }
+
+    for(int i = 0; i < ny; i++)
+    {
+        vertices.push_back({(float) i * dx - l_x / 2.0f, -l_y / 2.0f, 0.0f});
+        indices.push_back(vertices.size() - 1);
+        vertices.push_back({(float) i * dx - l_x / 2.0f, l_y / 2.0f, 0.0f});
+        indices.push_back(vertices.size() - 1);
+    }
+
+    Model grid;
+    grid.load(vertices, {}, {}, indices);
+
+    return grid;
 }
