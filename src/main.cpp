@@ -45,16 +45,21 @@ int main()
     // lines.translation = glm::vec3(0.0f, 0.0f, -25.0f);
     
     // lines.compute_transform();
-    float grid_scale = 25.0f;
+    float grid_scale = 7.0f;
     lines.scale = glm::vec3(2.0f * grid_scale);
+
+    float grid_offset_x = 0.0f;
+    float grid_offset_y = 3.2f;
+    float grid_offset_z = -0.2f;
+
     std::vector<glm::vec3> grid_translations = 
     {
-        {0.0f, 0.0f, - grid_scale},
-        {0.0f, 0.0f, grid_scale},
-        {0.0f, - grid_scale, 0.0f},
-        {0.0f, grid_scale, 0.0f},   
-        {- grid_scale, 0.0f, 0.0f},
-        {grid_scale, 0.0f, 0.0f}
+        {grid_offset_x, grid_offset_y, grid_offset_z - grid_scale},
+        {grid_offset_x, grid_offset_y, grid_offset_z + grid_scale},
+        {grid_offset_x, grid_offset_y - grid_scale, grid_offset_z},
+        {grid_offset_x, grid_offset_y + grid_scale, grid_offset_z},   
+        {grid_offset_x - grid_scale, grid_offset_y, grid_offset_z},
+        {grid_offset_x + grid_scale, grid_offset_y, grid_offset_z}
     };
     std::vector<glm::vec3> grid_rotations = 
     {
@@ -66,6 +71,7 @@ int main()
         glm::vec3(0.0f, glm::radians(90.0f), 0.0f)
     };
     lines.mode = Model::DrawMode::Lines;
+
 
     Texture tex;
     tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
@@ -149,10 +155,6 @@ int main()
 
             lines.render(&source_shader);
         }
-
-
-
-        
 
         platform.swap_buffers();
     }
