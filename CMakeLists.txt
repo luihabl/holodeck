@@ -57,7 +57,7 @@ elseif(PLATFORM_GLFW)
     src/backends/platform_glfw.cpp
     )
     
-    target_link_libraries(holodeck PUBLIC ${GLFW3_LIBRARIES})
+    target_link_libraries(holodeck PUBLIC glfw)
     add_compile_definitions(PLATFORM_GLFW)
     
     message("Using GLFW ${GLFW3_VERSION} platform")

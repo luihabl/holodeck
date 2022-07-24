@@ -61,7 +61,6 @@ namespace holodeck
 
         PlatformConfig::Callbacks& callbacks() { return config.callbacks; }
 
-        private:
         PlatformConfig config;
 
     };
