@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Platform selection
-option(PLATFORM_SDL2 "Use SDL2 platform" ON)
-option(PLATFORM_GLFW "Use GLFW platform" OFF)
+option(PLATFORM_SDL2 "Use SDL2 platform" OFF)
+option(PLATFORM_GLFW "Use GLFW platform" ON)
 
 # Graphics backend selection
 option(GRAPHICS_OPENGL "Use OpenGL" ON)

@@ -157,6 +157,45 @@ namespace
         if(p->config.callbacks.on_mouse_movement)
             p->config.callbacks.on_mouse_movement();
     }
+
+    void window_focus_callback(GLFWwindow* _window, int focused)
+    {
+        Platform* p = (Platform*)glfwGetWindowUserPointer(_window);
+
+        if(p->config.callbacks.on_mouse_movement)
+            p->config.callbacks.on_focus(focused == GLFW_TRUE);
+    }
+
+    void mouse_click_callback(GLFWwindow* _window, int button, int action, int mods)
+    {
+        Platform* p = (Platform*)glfwGetWindowUserPointer(_window);
+
+        if(p->config.callbacks.on_mouse_click)
+        {
+            int button_code = -1;
+            if (button == GLFW_MOUSE_BUTTON_LEFT)
+                button_code = 0;
+            else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+                button_code = 1;
+            else if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+                button_code = 2;
+
+            int is_pressed = -1;
+            if(action == GLFW_PRESS)
+                is_pressed = 1;
+            else if(action == GLFW_RELEASE)
+                is_pressed = 0;
+
+            if(button_code < 0|| is_pressed < 0)
+                return;
+
+            p->config.callbacks.on_mouse_click(button_code, is_pressed);
+        }
+
+
+        // if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        //     popup_menu();
+    }
 }
 
 void Platform::init(const PlatformConfig& _config)
@@ -199,6 +238,8 @@ void Platform::init(const PlatformConfig& _config)
     glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, key_pressed_callback);
     glfwSetCursorPosCallback(window, mouse_move_callback);
+    glfwSetMouseButtonCallback(window, mouse_click_callback);
+    glfwSetWindowFocusCallback(window, window_focus_callback);
     set_key_map();
 }
 

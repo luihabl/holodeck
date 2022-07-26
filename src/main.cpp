@@ -39,38 +39,38 @@ int main()
     );
 
     Model cube;
-    cube.load(Loader::OBJFile("contents/meshes/suzanne.obj", true));
+    cube.load(Loader::OBJFile("contents/meshes/teapot.obj", true));
 
-    Model lines = Model::grid(10, 10);
+    //Model lines = Model::grid(10, 10);
     // lines.translation = glm::vec3(0.0f, 0.0f, -25.0f);
     
     // lines.compute_transform();
-    float grid_scale = 7.0f;
-    lines.scale = glm::vec3(2.0f * grid_scale);
+    // float grid_scale = 7.0f;
+    // lines.scale = glm::vec3(2.0f * grid_scale);
 
-    float grid_offset_x = 0.0f;
-    float grid_offset_y = 3.2f;
-    float grid_offset_z = -0.2f;
+    // float grid_offset_x = 0.0f;
+    // float grid_offset_y = 3.2f;
+    // float grid_offset_z = -0.2f;
 
-    std::vector<glm::vec3> grid_translations = 
-    {
-        {grid_offset_x, grid_offset_y, grid_offset_z - grid_scale},
-        {grid_offset_x, grid_offset_y, grid_offset_z + grid_scale},
-        {grid_offset_x, grid_offset_y - grid_scale, grid_offset_z},
-        {grid_offset_x, grid_offset_y + grid_scale, grid_offset_z},   
-        {grid_offset_x - grid_scale, grid_offset_y, grid_offset_z},
-        {grid_offset_x + grid_scale, grid_offset_y, grid_offset_z}
-    };
-    std::vector<glm::vec3> grid_rotations = 
-    {
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
-        glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
-        glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
-        glm::vec3(0.0f, glm::radians(90.0f), 0.0f)
-    };
-    lines.mode = Model::DrawMode::Lines;
+    // std::vector<glm::vec3> grid_translations = 
+    // {
+    //     {grid_offset_x, grid_offset_y, grid_offset_z - grid_scale},
+    //     {grid_offset_x, grid_offset_y, grid_offset_z + grid_scale},
+    //     {grid_offset_x, grid_offset_y - grid_scale, grid_offset_z},
+    //     {grid_offset_x, grid_offset_y + grid_scale, grid_offset_z},   
+    //     {grid_offset_x - grid_scale, grid_offset_y, grid_offset_z},
+    //     {grid_offset_x + grid_scale, grid_offset_y, grid_offset_z}
+    // };
+    // std::vector<glm::vec3> grid_rotations = 
+    // {
+    //     glm::vec3(0.0f),
+    //     glm::vec3(0.0f),
+    //     glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+    //     glm::vec3(glm::radians(90.0f), 0.0f, 0.0f),
+    //     glm::vec3(0.0f, glm::radians(90.0f), 0.0f),
+    //     glm::vec3(0.0f, glm::radians(90.0f), 0.0f)
+    // };
+    // lines.mode = Model::DrawMode::Lines;
 
 
     Texture tex;
@@ -108,7 +108,21 @@ int main()
             -mouse_sensitivity * (float) platform.state.mouse.offset_y
         );
     };
+
+    platform.callbacks().on_mouse_click = [&](int button, bool pressed) {
+        if(button == 0 && pressed)
+        {
+            platform.relative_mouse(true);
+        }
+    };
+
+
+
     platform.callbacks().on_exit = [&quit]() { quit = true; };
+
+    platform.callbacks().on_focus = [&platform](bool focus){
+        platform.relative_mouse(focus);
+    };
 
     while(!quit)
     {
@@ -132,6 +146,10 @@ int main()
         {
             camera.pos += camera.speed * camera.front;
         }
+        if(platform.state.keyboard.pressed(Key::Escape))
+        {
+            platform.relative_mouse(false);
+        }
 
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
         cube_shader.use().set_vec3("view_pos", camera.pos);
@@ -147,14 +165,14 @@ int main()
         
         source_shader.set_vec4("color", Color::yellow);
 
-        for (int i = 0; i < 6; i++)
-        {
-            lines.quaternion = glm::quat(grid_rotations[i]);
-            lines.translation = grid_translations[i];
-            lines.compute_transform();
+        // for (int i = 0; i < 6; i++)
+        // {
+        //     lines.quaternion = glm::quat(grid_rotations[i]);
+        //     lines.translation = grid_translations[i];
+        //     lines.compute_transform();
 
-            lines.render(&source_shader);
-        }
+        //     lines.render(&source_shader);
+        // }
 
         platform.swap_buffers();
     }

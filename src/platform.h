@@ -24,6 +24,8 @@ namespace holodeck
         {
             std::function<void()> on_exit = nullptr;
             std::function<void()> on_mouse_movement = nullptr;
+            std::function<void(bool)> on_focus = nullptr;
+            std::function<void(int, bool)> on_mouse_click = nullptr;
         } callbacks;
     };
 
