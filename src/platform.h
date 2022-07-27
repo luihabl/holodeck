@@ -51,6 +51,8 @@ namespace holodeck
         void swap_buffers();
         uint64_t get_time_ms();
 
+        void* get_window() const;
+
         PlatformState state;
 
         void terminate();

@@ -27,6 +27,8 @@ src/model.cpp
 src/loader.cpp
 src/shader.h
 src/texture.h
+src/gui.cpp
+src/gui.h
 )
 
 target_include_directories(holodeck PUBLIC
@@ -34,10 +36,26 @@ external/glm
 external/stb
 )
 
+## Dear ImGui ----
+target_include_directories(holodeck PUBLIC
+external/imgui
+external/imgui/backends
+)
+target_sources(holodeck PRIVATE
+external/imgui/imgui.cpp
+external/imgui/imgui.cpp
+external/imgui/imgui_draw.cpp
+external/imgui/imgui_tables.cpp
+external/imgui/imgui_widgets.cpp
+external/imgui/imgui_demo.cpp
+)
+
+## OpenGL ----
 if(GRAPHICS_OPENGL)
     target_sources(holodeck PRIVATE 
     src/backends/graphics_opengl.cpp
     external/glad/src/glad.c
+    external/imgui/backends/imgui_impl_opengl3.cpp
     )
 
     target_include_directories(holodeck PUBLIC
@@ -46,11 +64,13 @@ if(GRAPHICS_OPENGL)
     add_compile_definitions(GRAPHICS_OPENGL)
 endif()
 
+## SDL ----
 if(PLATFORM_SDL2)
     find_package(SDL2 REQUIRED)
 
     target_sources(holodeck PRIVATE 
     src/backends/platform_sdl2.cpp
+    external/imgui/backends/imgui_impl_sdl.cpp
     )
     
     target_include_directories(holodeck PUBLIC ${SDL2_INCLUDE_DIRS})
@@ -59,11 +79,13 @@ if(PLATFORM_SDL2)
     
     message("Using SDL ${SDL2_VERSION} platform")
 
+## GLFW ----
 elseif(PLATFORM_GLFW)
     find_package(GLFW3 REQUIRED)
     
     target_sources(holodeck PRIVATE 
     src/backends/platform_glfw.cpp
+    external/imgui/backends/imgui_impl_glfw.cpp
     )
     
     target_link_libraries(holodeck PUBLIC glfw)

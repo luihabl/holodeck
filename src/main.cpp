@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "loader.h"
 #include "texture.h"
+#include "gui.h"
 
 #include "constants.h"
 
@@ -40,6 +41,9 @@ int main()
 
     Model cube;
     cube.load(Loader::OBJFile("contents/meshes/teapot.obj", true));
+
+    GUI gui;
+    gui.initialize(platform);
 
     //Model lines = Model::grid(10, 10);
     // lines.translation = glm::vec3(0.0f, 0.0f, -25.0f);
@@ -174,8 +178,12 @@ int main()
         //     lines.render(&source_shader);
         // }
 
+        gui.render();
+
         platform.swap_buffers();
     }
+
+    gui.shutdown();
 
     platform.terminate();
 

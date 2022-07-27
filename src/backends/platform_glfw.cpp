@@ -327,5 +327,9 @@ void Platform::terminate()
     glfwTerminate();
 }
 
+void* Platform::get_window() const
+{
+    return window;
+}
 
 #endif
