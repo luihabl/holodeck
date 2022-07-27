@@ -162,7 +162,7 @@ namespace
     {
         Platform* p = (Platform*)glfwGetWindowUserPointer(_window);
 
-        if(p->config.callbacks.on_mouse_movement)
+        if(p->config.callbacks.on_focus)
             p->config.callbacks.on_focus(focused == GLFW_TRUE);
     }
 

@@ -100,8 +100,12 @@ int main()
     source_shader.use().set_vec4("color", light_color);
 
     Camera camera;
-    
+
+    bool should_move = true;
     platform.callbacks().on_mouse_movement = [&]() {
+        if(!should_move)
+            return;
+
         float mouse_sensitivity = 0.1f;
         camera.compute_direction(
             mouse_sensitivity * (float) platform.state.mouse.offset_x, 
@@ -113,16 +117,11 @@ int main()
         if(button == 0 && pressed)
         {
             platform.relative_mouse(true);
+            should_move = true;
         }
     };
 
-
-
     platform.callbacks().on_exit = [&quit]() { quit = true; };
-
-    platform.callbacks().on_focus = [&platform](bool focus){
-        platform.relative_mouse(focus);
-    };
 
     while(!quit)
     {
@@ -149,6 +148,7 @@ int main()
         if(platform.state.keyboard.pressed(Key::Escape))
         {
             platform.relative_mouse(false);
+            should_move = false;
         }
 
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));

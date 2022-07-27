@@ -13,11 +13,20 @@ option(PLATFORM_GLFW "Use GLFW platform" ON)
 option(GRAPHICS_OPENGL "Use OpenGL" ON)
 
 add_executable(holodeck
+src/camera.h
+src/constants.h
 src/main.cpp
+src/log.h
 src/log.cpp
+src/file.h
 src/file.cpp
+src/graphics.h
+src/input.h
+src/model.h
 src/model.cpp
 src/loader.cpp
+src/shader.h
+src/texture.h
 )
 
 target_include_directories(holodeck PUBLIC
