@@ -31,6 +31,42 @@ void GUI::initialize(const Platform& platform)
 void GUI::draw()
 {
     ImGui::ShowDemoWindow();
+    draw_main_menu();
+}
+
+void GUI::draw_main_menu()
+{
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New")) {}
+            if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+            ImGui::Separator();
+            if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+            if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+            if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("View"))
+        {
+            if (ImGui::BeginMenu("Change camera mode.."))
+            {
+                if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+                if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }    
 }
 
 void GUI::render()

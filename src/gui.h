@@ -18,5 +18,6 @@ namespace holodeck
 
     private:
         void draw();
+        void draw_main_menu();
     };
 }

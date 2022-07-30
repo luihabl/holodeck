@@ -29,6 +29,8 @@ src/shader.h
 src/texture.h
 src/gui.cpp
 src/gui.h
+src/app.cpp
+src/app.h
 )
 
 target_include_directories(holodeck PUBLIC
