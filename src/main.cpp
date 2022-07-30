@@ -21,8 +21,8 @@ int main()
     bool quit = false;
     
     PlatformConfig config;
-    config.w = 800;
-    config.h = 600;
+    config.w = 1920;
+    config.h = 1080;
     config.name = "holodeck";
 
     Platform platform;
@@ -44,6 +44,7 @@ int main()
 
     GUI gui;
     gui.initialize(platform);
+    gui.use_mouse(false);
 
     //Model lines = Model::grid(10, 10);
     // lines.translation = glm::vec3(0.0f, 0.0f, -25.0f);
@@ -92,7 +93,7 @@ int main()
     light_source.compute_transform();
 
 
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float) 800/ (float)600, 0.1f, 100.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
     cube_shader.use().set_mat4("proj", proj);
     source_shader.use().set_mat4("proj", proj);
 
@@ -117,11 +118,13 @@ int main()
         );
     };
 
-    platform.callbacks().on_mouse_click = [&](int button, bool pressed) {
-        if(button == 0 && pressed)
+    platform.callbacks().on_mouse_click = [&](int button, bool pressed) 
+    {        
+        if(button == 0 && pressed && !gui.wants_mouse())
         {
             platform.relative_mouse(true);
             should_move = true;
+            gui.use_mouse(false);
         }
     };
 
@@ -153,6 +156,7 @@ int main()
         {
             platform.relative_mouse(false);
             should_move = false;
+            gui.use_mouse(true);
         }
 
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));

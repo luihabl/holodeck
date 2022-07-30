@@ -17,7 +17,7 @@ void GUI::initialize(const Platform& platform)
 
     ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*) platform.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
-
+    
 }
 
 void GUI::draw()
@@ -43,4 +43,20 @@ void GUI::shutdown()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+}
+
+void GUI::use_mouse(bool use)
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    if(use)
+        io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+    else
+        io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+}
+
+bool GUI::wants_mouse()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    return io.WantCaptureMouse;
 }
