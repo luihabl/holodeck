@@ -62,6 +62,7 @@ namespace holodeck
         void hide_mouse();
         void show_mouse();
         void relative_mouse(bool activate = true);
+        float get_scale() const;
 
         PlatformConfig::Callbacks& callbacks() { return config.callbacks; }
 

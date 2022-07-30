@@ -14,6 +14,7 @@ namespace holodeck
 
         void use_mouse(bool use);
         bool wants_mouse();
+        bool wants_keyboard();
 
     private:
         void draw();

@@ -332,4 +332,12 @@ void* Platform::get_window() const
     return window;
 }
 
+
+float Platform::get_scale() const
+{
+    float xscale, yscale;
+    glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &xscale, &yscale);
+    return xscale;
+}
+
 #endif

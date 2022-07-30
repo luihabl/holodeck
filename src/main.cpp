@@ -136,27 +136,30 @@ int main()
                 
         Graphics::clear(Color::black);
 
-        if(platform.state.keyboard.pressed(Key::A))
+        if(!gui.wants_keyboard())
         {
-            camera.pos -= camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
-        }
-        if(platform.state.keyboard.pressed(Key::D))
-        {
-            camera.pos += camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
-        }
-        if(platform.state.keyboard.pressed(Key::S))
-        {
-            camera.pos -= camera.speed * camera.front;
-        }
-        if(platform.state.keyboard.pressed(Key::W))
-        {
-            camera.pos += camera.speed * camera.front;
-        }
-        if(platform.state.keyboard.pressed(Key::Escape))
-        {
-            platform.relative_mouse(false);
-            should_move = false;
-            gui.use_mouse(true);
+            if(platform.state.keyboard.pressed(Key::A))
+            {
+                camera.pos -= camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+            }
+            if(platform.state.keyboard.pressed(Key::D))
+            {
+                camera.pos += camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+            }
+            if(platform.state.keyboard.pressed(Key::S))
+            {
+                camera.pos -= camera.speed * camera.front;
+            }
+            if(platform.state.keyboard.pressed(Key::W))
+            {
+                camera.pos += camera.speed * camera.front;
+            }
+            if(platform.state.keyboard.pressed(Key::Escape))
+            {
+                platform.relative_mouse(false);
+                should_move = false;
+                gui.use_mouse(true);
+            }
         }
 
         cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));

@@ -7,7 +7,7 @@ namespace holodeck
     struct Camera
     {
         glm::vec3 pos = glm::vec3(0.0f, 0.0f, 6.0f);
-        glm::vec3 target = glm::vec3(0, 0, 0);
+        glm::vec3 target = glm::vec3(0.1, 0.1, 0.1);
         glm::vec3 direction = glm::normalize(pos - target);
         glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0, 1, 0), direction));
         glm::vec3 up = glm::cross(direction, right);
