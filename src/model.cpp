@@ -55,11 +55,9 @@ void Model::clear()
     indices.clear();
 }
 
-void Model::render(Shader* _shader)
+void Model::render()
 {
-    if(_shader)
-        _shader->use().set_mat4("model", transform);
-    else if(shader)
+    if(shader)
         shader->use().set_mat4("model", transform);
 
     if (wireframe)
@@ -165,7 +163,7 @@ void Model::compute_transform(const glm::mat4& parent)
     transform = glm::scale(transform, scale);
 }
 
-Model Model::unit_cube()
+Model::Ref Model::unit_cube()
 {
     std::vector<glm::vec3> vertices = {
         {-0.5f,  -0.5f,  -0.5f},
@@ -236,13 +234,13 @@ Model Model::unit_cube()
         22, 23, 20
     };
 
-    Model cube;
-    cube.load(vertices, normals, {}, indices);
+    Model::Ref cube = std::make_shared<Model>();
+    cube->load(vertices, normals, {}, indices);
 
     return cube;
 }
 
-Model Model::grid(int nx, int ny, float l_x, float l_y)
+Model::Ref Model::grid(int nx, int ny, float l_x, float l_y)
 {
     float dx = l_x / ((float) nx - 1.0f); 
     float dy = l_y / ((float) ny - 1.0f); 
@@ -266,8 +264,8 @@ Model Model::grid(int nx, int ny, float l_x, float l_y)
         indices.push_back(vertices.size() - 1);
     }
 
-    Model grid;
-    grid.load(vertices, {}, {}, indices);
+    Model::Ref grid = std::make_shared<Model>();
+    grid->load(vertices, {}, {}, indices);
 
     return grid;
 }

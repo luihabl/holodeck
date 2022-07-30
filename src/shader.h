@@ -1,10 +1,13 @@
 #pragma once 
 
 #include <glm/glm.hpp>
+#include <memory>
 
 namespace holodeck {
     class Shader {
         public:
+            using Ref = std::shared_ptr<Shader>;
+
             Shader() = default;
             
             unsigned int id;
@@ -22,9 +25,9 @@ namespace holodeck {
             void set_vec2(const char * name, const glm::vec2 & vec) const;
             // add other uniform types
 
-            static Shader from_source(const char* vertex_src, const char* frag_src, const char*  geom_src = nullptr);
-            static Shader from_file(const char* vertex_path, const char* frag_path, const char*  geom_path = nullptr);
-            static Shader default_sprite_shaders();
+            static Ref from_source(const char* vertex_src, const char* frag_src, const char*  geom_src = nullptr);
+            static Ref from_file(const char* vertex_path, const char* frag_path, const char*  geom_path = nullptr);
+            static Ref default_sprite_shaders();
 
         private: 
             unsigned int add(const char* source, unsigned int type);

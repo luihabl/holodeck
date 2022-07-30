@@ -28,10 +28,56 @@ void GUI::initialize(const Platform& platform)
     
 }
 
-void GUI::draw()
+void draw_model(Model* model)
+{
+    char buf[256] = {0};
+    sprintf(buf, "model [%p]", model);
+
+    ImGui::PushID(buf);
+
+    if(ImGui::CollapsingHeader(buf))
+    {
+        if(ImGui::SliderFloat3("Translation", &model->translation[0], -20.0f, 20.0f))
+        {
+            model->compute_transform();
+        }
+
+        if(ImGui::SliderFloat3("Scale", &model->scale[0], 0.0f, 10.0f))
+        {
+            model->compute_transform();
+        }
+
+        ImGui::ColorEdit4("Color [mul]", &model->color_mul[0], ImGuiColorEditFlags_NoInputs);
+        ImGui::ColorEdit4("Color [add]", &model->color_add[0], ImGuiColorEditFlags_NoInputs);
+        ImGui::ColorEdit4("Color [const]", &model->color_const[0], ImGuiColorEditFlags_NoInputs);
+    }
+
+    ImGui::PopID();
+}
+
+
+void GUI::draw(Scene* scene)
 {
     ImGui::ShowDemoWindow();
     draw_main_menu();
+
+
+    ImGui::Begin("Scene");
+
+    ImGui::Text("Light");
+
+    ImGui::SliderFloat3("Light position", &scene->light_pos[0], -20.0f, 20.0f);
+    ImGui::ColorEdit4("Light color", &scene->light_color[0], ImGuiColorEditFlags_NoInputs);
+    
+    ImGui::Text("Models");
+
+    for(auto model : scene->models)
+    {
+        draw_model(model.get());
+    }
+    
+
+    ImGui::End();
 }
 
 void GUI::draw_main_menu()
@@ -69,13 +115,13 @@ void GUI::draw_main_menu()
     }    
 }
 
-void GUI::render()
+void GUI::render(Scene* scene)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    GUI::draw();
+    GUI::draw(scene);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -23,43 +23,38 @@ void App::run()
     m_platform.relative_mouse();
     m_gui.use_mouse(false);
 
-    Shader cube_shader = Shader::from_file(
+    Shader::Ref single_light_shader = Shader::from_file(
         "contents/shaders/light.vert.glsl", 
         "contents/shaders/light.frag.glsl"
     );
 
-    Shader source_shader = Shader::from_file(
-        "contents/shaders/const.vert.glsl", 
-        "contents/shaders/const.frag.glsl"
-    );
+    m_scene.set_projection(glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f));
 
-    Model cube;
-    cube.load(Loader::OBJFile("contents/meshes/teapot.obj", true));
 
-    Texture tex;
-    tex.load(Loader::DDSFile("contents/meshes/suzanne.DDS"));
+    Model::Ref cube = Model::from_loader(Loader::OBJFile("contents/meshes/suzanne.obj", true));
+    Model::Ref light_source = Model::unit_cube();
 
-    // Model cube = Model::unit_cube();
-    Model light_source = Model::unit_cube();
-
-    glm::vec3 light_pos = glm::vec3(1.2f, 1.0f, 2.0f);
-    light_source.translation = light_pos;
-    light_source.scale = glm::vec3(0.2f);
-    // light_source.quaternion = glm::quat(glm::vec3(0.0f, 0.0f, glm::radians(45.0f)));
-    light_source.compute_transform();
-
-    glm::mat4 proj = glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
-    cube_shader.use().set_mat4("proj", proj);
-    source_shader.use().set_mat4("proj", proj);
+    Texture::Ref tex = Texture::from_dds(Loader::DDSFile("contents/meshes/suzanne.DDS"));
 
     glm::vec4 light_color = Color::white;
+    glm::vec4 light_pos = glm::vec4(1.2f, 1.0f, 2.0f, 1.0f);
+    light_source->translation = light_pos;
+    light_source->scale = glm::vec3(0.2f);
+    light_source->compute_transform();
+    m_scene.set_light(light_pos, light_color);
 
-    cube_shader.use().set_vec4("light_pos", glm::vec4(light_pos, 1.0f));
-    cube_shader.use().set_vec4("light_color", light_color);
-    cube_shader.use().set_vec4("object_color", glm::vec4(1.0f, 0.5f, 0.31f, 1.0f));
-    source_shader.use().set_vec4("color", light_color);
+    cube->color_mul = Color::white;
+    cube->color_add = Color::black;
+    cube->tex = tex;
 
-    Camera camera;
+    light_source->color_mul = Color::black;
+    light_source->color_const = light_color;
+
+    cube->shader = single_light_shader;
+    light_source->shader = single_light_shader;
+
+    m_scene.add_model(cube);
+    m_scene.add_model(light_source);
 
     bool should_move = true;
     m_platform.callbacks().on_mouse_movement = [&]() {
@@ -67,7 +62,7 @@ void App::run()
             return;
 
         float mouse_sensitivity = 0.1f;
-        camera.compute_direction(
+        m_scene.get_camera().compute_direction(
             mouse_sensitivity * (float) m_platform.state.mouse.offset_x, 
             -mouse_sensitivity * (float) m_platform.state.mouse.offset_y
         );
@@ -95,19 +90,19 @@ void App::run()
         {
             if(m_platform.state.keyboard.pressed(Key::A))
             {
-                camera.pos -= camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+                m_scene.get_camera().pos -= m_scene.get_camera().speed * glm::normalize(glm::cross(m_scene.get_camera().front, m_scene.get_camera().up));
             }
             if(m_platform.state.keyboard.pressed(Key::D))
             {
-                camera.pos += camera.speed * glm::normalize(glm::cross(camera.front, camera.up));
+                m_scene.get_camera().pos += m_scene.get_camera().speed * glm::normalize(glm::cross(m_scene.get_camera().front, m_scene.get_camera().up));
             }
             if(m_platform.state.keyboard.pressed(Key::S))
             {
-                camera.pos -= camera.speed * camera.front;
+                m_scene.get_camera().pos -= m_scene.get_camera().speed * m_scene.get_camera().front;
             }
             if(m_platform.state.keyboard.pressed(Key::W))
             {
-                camera.pos += camera.speed * camera.front;
+                m_scene.get_camera().pos += m_scene.get_camera().speed * m_scene.get_camera().front;
             }
             if(m_platform.state.keyboard.pressed(Key::Escape))
             {
@@ -117,31 +112,8 @@ void App::run()
             }
         }
 
-        cube_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
-        cube_shader.use().set_vec3("view_pos", camera.pos);
-        // cube.transform = glm::rotate(glm::mat4(1.0f), glm::radians((float)platform.get_time_ms()) / 20.f, glm::vec3(1, 1, 0));
-
-        tex.bind();
-        cube_shader.use().set_int("tex_sampler", 0);
-        cube.render(&cube_shader);
-
-        source_shader.use().set_mat4("view", glm::lookAt(camera.pos, camera.pos + camera.front, camera.up));
-        source_shader.set_vec4("color", light_color);
-        light_source.render(&source_shader);
-        
-        source_shader.set_vec4("color", Color::yellow);
-
-        // for (int i = 0; i < 6; i++)
-        // {
-        //     lines.quaternion = glm::quat(grid_rotations[i]);
-        //     lines.translation = grid_translations[i];
-        //     lines.compute_transform();
-
-        //     lines.render(&source_shader);
-        // }
-
-        m_gui.render();
-
+        m_scene.render();
+        m_gui.render(&m_scene);
         m_platform.swap_buffers();
     }
 

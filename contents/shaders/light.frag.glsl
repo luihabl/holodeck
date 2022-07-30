@@ -7,7 +7,9 @@ in vec2 frag_uv;
 
 uniform vec4 light_pos;
 uniform vec4 light_color;
-uniform vec4 object_color;
+uniform vec4 object_color_add;
+uniform vec4 object_color_mul;
+uniform vec4 object_color_const;
 uniform vec3 view_pos;
 uniform sampler2D tex_sampler;
 
@@ -35,8 +37,8 @@ void main()
     vec4 specular_light = specular_factor * light_color * pow(max(dot(view_dir, reflect_dir), 0.0f), shininess);
 
     // Final color
-    vec4 color = texture(tex_sampler, frag_uv);
+    vec4 tex_color = texture(tex_sampler, frag_uv);
 
-    frag_color = (ambient_light + diffuse_light + specular_light) * color;
+    frag_color = (ambient_light + diffuse_light + specular_light) * (tex_color * object_color_mul + object_color_add) + object_color_const;
 }
 

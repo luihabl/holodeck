@@ -1,6 +1,7 @@
 #pragma once
 
 #include "platform.h"
+#include "scene.h"
 
 namespace holodeck
 {
@@ -9,7 +10,7 @@ namespace holodeck
     
     public:
         void initialize(const Platform& platform);
-        void render();
+        void render(Scene* scene);
         void shutdown();
 
         void use_mouse(bool use);
@@ -17,7 +18,7 @@ namespace holodeck
         bool wants_keyboard();
 
     private:
-        void draw();
+        void draw(Scene* scene);
         void draw_main_menu();
     };
 }

@@ -156,14 +156,15 @@ void Shader::compile_all(const char* vertex_src, const char* frag_src, const cha
     this->compiled = (bool) success;
 }
 
-Shader Shader::from_source(const char* vertex_src, const char* frag_src, const char*  geom_src) {
-    Shader shader;
-    shader.compile_all(vertex_src, frag_src, geom_src);
+Shader::Ref Shader::from_source(const char* vertex_src, const char* frag_src, const char*  geom_src) 
+{
+    Ref shader = std::make_shared<Shader>();
+    shader->compile_all(vertex_src, frag_src, geom_src);
     return shader;
 }
 
-Shader Shader::from_file(const char* vertex_path, const char* frag_path, const char*  geom_path) {
-    Shader shader;
+Shader::Ref Shader::from_file(const char* vertex_path, const char* frag_path, const char*  geom_path) {
+    Ref shader = std::make_shared<Shader>();
     std::string vertex_src, frag_src, geom_src;
 
     vertex_src = File::load_txt(vertex_path);
@@ -172,11 +173,11 @@ Shader Shader::from_file(const char* vertex_path, const char* frag_path, const c
         geom_src   = File::load_txt(geom_path);
 
     if (frag_src != "" && vertex_src != "")
-        shader.compile_all(vertex_src.c_str(), frag_src.c_str(), geom_path != nullptr ? geom_src.c_str() : nullptr);
+        shader->compile_all(vertex_src.c_str(), frag_src.c_str(), geom_path != nullptr ? geom_src.c_str() : nullptr);
     return shader;    
 }
 
-Shader Shader::default_sprite_shaders() 
+Shader::Ref Shader::default_sprite_shaders() 
 {
     return from_source(default_vertex_src, default_frag_src);
 }
@@ -220,11 +221,14 @@ void Shader::set_vec4(const char * name, const glm::vec4 & vec) const {
 
 void Texture::bind() const
 {
+    glActiveTexture(GL_TEXTURE0 + this->tex_slot);
     glBindTexture(GL_TEXTURE_2D, this->id); 
 }
 
-void Texture::load(const Loader::DDSFile& dds)
+Texture::Ref Texture::from_dds(const Loader::DDSFile& dds)
 {
+    Ref tex = std::make_shared<Texture>();
+
 	unsigned int components  = (dds.format == Loader::DDSFile::Compression::DXT1) ? 3 : 4; 
 	unsigned int format;
 	switch(dds.format) 
@@ -239,14 +243,14 @@ void Texture::load(const Loader::DDSFile& dds)
 		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
 		break; 
 	default: 
-		return; 
+		return tex; 
 	}
 
 	// Create one OpenGL texture
-	glGenTextures(1, &this->id);
+	glGenTextures(1, &tex->id);
 
 	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, this->id);
+	glBindTexture(GL_TEXTURE_2D, tex->id);
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);	
 	
 	unsigned int block_size = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16; 
@@ -269,16 +273,18 @@ void Texture::load(const Loader::DDSFile& dds)
 		// Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
 		if(width < 1) width = 1;
 		if(height < 1) height = 1;
-
 	} 
+
+    return tex;
 }
 
-void Texture::load(const Loader::PNGFile& png)
+Texture::Ref Texture::from_png(const Loader::PNGFile& png)
 {
+    Ref tex = std::make_shared<Texture>();
 
-    glGenTextures(1, &this->id);
+    glGenTextures(1, &tex->id);
 
-    glBindTexture(GL_TEXTURE_2D, this->id);
+    glBindTexture(GL_TEXTURE_2D, tex->id);
 
     GLint format = png.n_comp == 3 ? GL_RGB : GL_RGBA;
     glTexImage2D(GL_TEXTURE_2D, 0, format, png.w, png.h, 0, format, GL_UNSIGNED_BYTE, png.data);
@@ -290,6 +296,8 @@ void Texture::load(const Loader::PNGFile& png)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    return tex;
 }
 
 #pragma endregion

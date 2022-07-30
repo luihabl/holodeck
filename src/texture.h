@@ -1,24 +1,23 @@
 #pragma once
 
 #include "loader.h"
+#include <memory>
 
 namespace holodeck
 {
     struct Texture 
     {
+        using Ref = std::shared_ptr<Texture>;
 
-        Texture() = default;
-        // Texture(int w, int h, int n_comp, unsigned char * data);
-        
         unsigned int id = 0;
         unsigned int tex_slot = 0;
         
         int w = 0, h = 0;
 
         void bind() const;
-        void load(const Loader::DDSFile& dds);
-        void load(const Loader::PNGFile& png);
 
-        static Texture empty(int w, int h);
+        static Ref from_dds(const Loader::DDSFile& dds);
+        static Ref from_png(const Loader::PNGFile& png);
+    
     };
 }

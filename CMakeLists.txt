@@ -31,6 +31,8 @@ src/gui.cpp
 src/gui.h
 src/app.cpp
 src/app.h
+src/scene.cpp
+src/scene.h
 )
 
 target_include_directories(holodeck PUBLIC
